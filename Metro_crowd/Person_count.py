@@ -14,10 +14,10 @@ from yolov5 import detect
 class load_image:
 
     def __init__(self):
-        self.host = 'test.cy2mahvlzze7.ap-northeast-2.rds.amazonaws.com'
-        self.user = 'admin'
-        self.pw = 'j6332335'
-        self.db = 'team_project'
+        self.host = ''
+        self.user = ''
+        self.pw = ''
+        self.db = ''
 
     def create_random_image_index(self, image_num=10):
         image_index_list = []
@@ -202,7 +202,7 @@ def my_detect(img=None):
 class load_metro_data: # 실시간 지하철 도착정보
     def __init__(self):
         self.station = '사당'
-        self.key = '61584e6867776e733933454a4b6761'
+        self.key = ''
         self.station_code =''
         base_url = 'http://swopenapi.seoul.go.kr/api/subway/'+self.key+'/json/realtimeStationArrival/0/10/'
         url = base_url + self.station
