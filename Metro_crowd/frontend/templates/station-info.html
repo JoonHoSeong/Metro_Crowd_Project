@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Metro Map</title>
+    <meta name="author" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="{{ url_for('static', filename='css/normalize.css') }}" type="text/css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/station-info.css') }}" type="text/css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/0c8dd76eca.js" crossorigin="anonymous"></script>
+
+    <script> /*버튼 누르면 색 변경 script 작업중 */
+        /*
+        $(#button-line2, #button-line4).click(function(event) {
+            var e = $(event.target);
+            e.setAttribute('style', 'color: red')
+        }); */
+    </script>
+
+    <script> 
+        const lineColor = {
+            "1호선": "#0052A4", "2호선": "#0EA349",
+            "3호선": "#EF7C1C", "4호선": "#00a9e0",
+            "5호선": "#A05EB5", "6호선": "#CD7C2F",
+            "7호선": "#747F00", "8호선": "#EA545D",
+            "9호선": "#BB8336", "인천1호선": "#7CA8D5",
+            "인천2호선": "#ED8B00", "수인분당선": "#FFDF3D",
+            "신분당": "#D4003B", "경의중앙선": "#79C0A0",
+            "공항철도": "#038FA0", "경춘선": "#33C7A7",
+            "의정부경전철": "#F9D469", "용인경전철": "#56AB32",
+            "경강선":	"#004EA7", "우이신설경전철": "#B7B7B7",
+            "서해선":	"#8BE800", "김포도시철도": "#F6BF1E"
+        };
+        
+        const lineText = {
+            "1호선": "1", "2호선": "2",
+            "3호선": "3", "4호선": "4",
+            "5호선": "5", "6호선": "6",
+            "7호선": "7", "8호선": "8",
+            "9호선": "9", "인천1호선": "1",
+            "인천2호선": "2", "수인분당선": "분당",
+            "신분당": "신분당", "경의중앙선": "경의",
+            "공항철도": "공항", "경춘선": "경춘",
+            "의정부경전철": "의정", "용인경전철": "용인",
+            "경강선":	"경강", "우이": "#B7B7B7",
+            "서해선":	"서해", "김포도시철도": "김포"
+        };
+
+
+    </script>
+</head>
+
+<!-- bottom page 정보, (update button css 적용은 index에 되어 있음)-->
+<!-- 현재 index.html로 옮겨 쓰이는 페이지는 아니지만, 혹시 모르니 코드 삭제하지 않았음. -->
+<body>
+    <div class="contentWrapper">
+        <div class="content">
+            <div class="topMenu">
+                
+                
+                <div class="button-container"> 
+                    <ul>
+                        <li>
+                            <button class="line-toggle-button" style="background: #0EA349; border: none; border: solid 1px ##0EA349">
+                                <span class="line-text-focus">2</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="line-toggle-button" style="background-color:#FFFFFF; border: solid 1px #00a9e0">
+                                <span class="line-text-nfocus">4</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="updateButton"></button> 
+                <i class="fas fa-sync-alt"></i>
+            </div>
+    
+            
+            <div class="station-info" style="background: #0EA349; border: none;">
+                <!-- 이전 역 link -->
+                <div class="fStation-section">
+                    <i class="fas fa-angle-left"></i>
+                    <div id="fStation-name">
+                        <span>낙성대</span>
+                    </div>
+                </div>
+                <!-- 현재 역 name -->
+                <div class="station-section">
+                    <div class="station-namebox">
+                        <span>사당</span> <!--최대 9글자 가능-->
+                    </div>
+                </div>
+                <!--다음 역 link-->
+                <div class="nStation-section">
+                    <div class="nStation-name">
+                        <span>방배</span>
+                    </div>
+                    <i class="fas fa-angle-right"></i>
+                </div>
+            </div>
+            <hr>
+    
+            
+            <div class="congestion-by-comp">
+                <div class="cong-title">
+                    <span>칸별혼잡도</span>
+                </div>
+                
+                <div class="cong-container">
+                    
+                    <div class="standard-time">12:00 기준</div>
+
+                    <div class="contentWrapper">
+                        
+                        <div class="upline">
+                            <div class="upContainer">
+                                <div class="line-title"> 
+                                    <span>당고개행</span>
+                                </div>
+                                <div class="remainTime"> 
+                                    <span>00분 00초</span>
+                                </div>
+                                <div class="show-congestion"> 
+                                    <div class="cong up-1" style="background-color: #868686"></div>
+                                    <div class="cong up-2" style="background-color: #868686"></div>
+                                    <div class="cong up-3" style="background-color: #868686"></div>
+                                    <div class="cong up-4" style="background-color: #868686"></div>
+                                    <div class="cong up-5" style="background-color: #868686"></div>
+                                    <div class="cong up-6" style="background-color: #868686"></div>
+                                    <div class="cong up-7" style="background-color: #868686"></div>
+                                    <div class="cong up-8" style="background-color: #868686"></div>
+                                    <div class="cong up-9" style="background-color: #868686"></div>
+                                    <div class="cong up-10" style="background-color: #868686"></div>
+    
+                                    <div></div> 
+                                    <div class="compNum">1</div>
+                                    <div class="compNum">2</div>
+                                    <div class="compNum">3</div>
+                                    <div class="compNum">4</div>
+                                    <div class="compNum">5</div>
+                                    <div class="compNum">6</div>
+                                    <div class="compNum">7</div>
+                                    <div class="compNum">8</div>
+                                    <div class="compNum">9</div>
+                                    <div class="compNum">10</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="downline">
+                            <div class="downContainer">
+                                <div class="line-title">
+                                    <span>오이도행</span> 
+                                </div>
+                                <div class="remainTime"> 
+                                    <span>00분 00초</span>
+                                </div>
+                                <div class="show-congestion"> 
+                                    <div class="cong down-1" style="background-color: #868686"></div>
+                                    <div class="cong down-2" style="background-color: #868686"></div>
+                                    <div class="cong down-3" style="background-color: #868686"></div>
+                                    <div class="cong down-4" style="background-color: #868686"></div>
+                                    <div class="cong down-5" style="background-color: #868686"></div>
+                                    <div class="cong down-6" style="background-color: #868686"></div>
+                                    <div class="cong down-7" style="background-color: #868686"></div>
+                                    <div class="cong down-8" style="background-color: #868686"></div>
+                                    <div class="cong down-9" style="background-color: #868686"></div>
+                                    <div class="cong down-10" style="background-color: #868686"></div>
+        
+                                    <div></div> 
+                                    <div class="compNum">1</div>
+                                    <div class="compNum">2</div>
+                                    <div class="compNum">3</div>
+                                    <div class="compNum">4</div>
+                                    <div class="compNum">5</div>
+                                    <div class="compNum">6</div>
+                                    <div class="compNum">7</div>
+                                    <div class="compNum">8</div>
+                                    <div class="compNum">9</div>
+                                    <div class="compNum">10</div>
+                                </div>
+                            </div>
+    
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+.headerWrapper {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 110px;
+  background: white;
+  z-index: 999;
+  border-bottom: solid 1px #d2d2d2;
+}
+
+.titlebar {
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-family: "Righteous", cursive;
+  font-size: 1.3em;
+  color: #335689;
+}
+
+.menubar {
+  display: flex;
+  height: 55px;
+  width: 100%;
+}
+
+.searchbox {
+  display: table;
+  width: 98%;
+  height: 45px;
+  margin: 0px 0px 5px 5px;
+  border-radius: 3px;
+  background: #ececec;
+  border: solid 0.05px #d2d2d2;
+}
+
+.search-title {
+  display: inline-flex;
+  margin: 13px 0px 0px 15px;
+}
+
+.search-title > span {
+  display: table-cell;
+  color: #868686;
+  font-size: 1.1em;
+}
+
+.search-icon {
+  display: table-cell;
+  font-size: 1.8em;
+  color: #686868;
+  float: right;
+  margin-right: 9px;
+  margin-top: 7px;
+}

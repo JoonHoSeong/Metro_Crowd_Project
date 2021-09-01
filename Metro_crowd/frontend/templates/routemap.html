@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="author" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="http://mattstow.com/js/ios-orientationchange-fix.min.js"></script>
+    <script  src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+    <script src="http://mattstow.com/experiment/responsive-image-maps/jquery.rwdImageMaps.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/hammerjs/2.0.8/hammer.min.js"></script>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.4.1/dist/panzoom.min.js"></script>
+    <style>
+        .mapWrapper {
+            width: 100%;
+            height: calc(100% - 116px);
+            overflow: scroll;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function(){
+            $("area").click(function(){
+                var lines = $(this).attr('class');
+                var lineArr = lines.split(' ');
+                var stName = $(this).attr('title');
+
+                console.log(stName);
+                lineArr.forEach(function(element){
+                    console.log(element+"!");
+                });
+            });
+        });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", (e) => {
+            panzoom('.mapWrapper', {bound:'outer' });
+        });
+    </script>
+</head>
+
+<body>
+
+    
+</body>
+
+</html>

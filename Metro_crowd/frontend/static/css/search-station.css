@@ -1,0 +1,34 @@
+.searchmenu-bar {
+  display: flex;
+  height: 70px;
+  width: 100%;
+  padding-top: 25px;
+  border-bottom: solid 1px #d2d2d2;
+}
+
+.back-icon {
+  font-size: 2em;
+  color: #606060;
+  margin: 5px 7px 0px 15px;
+}
+
+.searchbox {
+  display: flex;
+  float: left;
+  width: calc(100% - 60px);
+  height: 45px;
+  margin: 0px 0px 5px 5px;
+  border-radius: 3px;
+  background: #ececec;
+  border: solid 0.05px #d2d2d2;
+}
+
+input[type="text"] {
+  background: #ececec;
+  margin-left: 7px;
+  border: none;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Metro Map</title>
+    <meta name="author" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content=content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="{{ url_for('static', filename='css/normalize.css') }}" type="text/css" rel="stylesheet">
+    <script  src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+    
+    <script src="http://mattstow.com/js/ios-orientationchange-fix.min.js"></script>
+    <script src="http://mattstow.com/experiment/responsive-image-maps/jquery.rwdImageMaps.min.js"></script>
+    <script src="{{ url_for('static', filename='js/panzoom.js') }}"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/0c8dd76eca.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/0c8dd76eca.js" crossorigin="anonymous"></script>
+    
+    <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/header.css') }}" rel="stylesheet">
+
+    <script> /* Test용 코드(클릭 잘 되는지) + 클릭시 역 정보 div 나타남 */
+        $(document).ready(function(){
+            var StInfo = document.getElementById('StInfo');
+            StInfo.style.visibility='hidden'; //deafult-"contentWrapper" hidden상태
+
+            $("area").click(function(){
+                var lines = $(this).attr('class'); 
+                var lineArr = lines.split(' '); //역에 해당하는 호선 문자열을 담은 Arr
+                var stName = $(this).attr('title'); //클릭한 역 이름
+
+                console.log(stName);
+                //alert(stName);
+                lineArr.forEach(function(element){ //역의 모든 호선을 출력
+                    console.log(element+"!");
+                });
+                
+                StInfo.style.visibility='visible'; //클릭시, "contentWrapper" visible
+            });
+        });
+    </script>
+
+    <script> /* map Panzoom 기능 활성화 */
+        document.addEventListener("DOMContentLoaded", (e) => {
+            panzoom('#map', {bound:'outer'});
+        });
+    </script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="headerWrapper">
+
+            <div class="titlebar">
+                <div class="title">Metro Map</div> <!-- 임시 title -->
+            </div>
+            <div class="menubar"> <!-- 클릭시 search-staion.html 로 넘어감. 실질적인 기능은 X-->
+                <div class="searchbox" onclick="location.href='search-station.html'">
+                    <div class="search-title">
+                        <span>지하철역 검색</span>
+                    </div>
+                    <div class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!--map section-->
+        <div class="mapWrapper">
+            <img id="map" src="{{ url_for('static', filename='img/map_korea.jpg') }}" usemap="#metro-routemap">
+                    <map name="metro-routemap"> <!-- 이미지맵 좌표 매핑 -->
+                        <!-- 1호선 -->
+                        <area title="소요산" coords="1725,105,25" class="1호선" shape="circle">
+                        <area title="동두천" coords="1810,105,25" class="1호선" shape="circle">
+                        <area title="보산" coords="1896,105,25" class="1호선" shape="circle">
+                        <area title="동두천중앙" coords="1981,105,25" class="1호선" shape="circle">
+                        <area title="지행" coords="2066,105,25" class="1호선" shape="circle">
+                        <area title="덕정" coords="2151,105,25" class="1호선" shape="circle">
+                        <area title="덕계" coords="2236,105,25" class="1호선" shape="circle">
+                        <area title="양주" coords="2322,105,25" class="1호선" shape="circle">
+                        <area title="녹양" coords="2407,105,25" class="1호선" shape="circle">
+                        <area title="가능" coords="2492,105,25" class="1호선" shape="circle">
+                        <area title="의정부" coords="2577,105,25" class="1호선" shape="circle">
+                        <area title="회룡" coords="2647,105,25" class="1호선 의정부경전철" shape="circle">
+                        <area title="망월사" coords="2748,105,25" class="1호선" shape="circle">
+                        <area title="도봉산" coords="2858,160,25" class="1호선 7호선" shape="circle">
+                        <area title="도봉" coords="2858,222,25" class="1호선" shape="circle">
+                        <area title="방학" coords="2858,271,25" class="1호선" shape="circle">
+                        <area title="창동" coords="2858,362,25" class="1호선 4호선" shape="circle">
+                        <area title="녹천" coords="2858,409,25" class="1호선" shape="circle">
+                        <area title="월계" coords="2858,455,25" class="1호선" shape="circle">
+                        <area title="광운대" coords="2858,502,25" class="1호선 경춘선" shape="circle">
+                        <area title="석계" coords="2841,548,25" class="1호선 6호선" shape="circle">
+                        <area title="신이문" coords="2800,604,25" class="1호선" shape="circle">
+                        <area title="외대앞" coords="2767,646,25" class="1호선" shape="circle">
+                        <area title="회기" coords="2731,692,25" class="1호선 경의중앙선 경춘선" shape="circle">
+                        <area title="청량리" coords="2679,692,25" class="1호선 경의중앙선 경춘선 수인분당선" shape="circle">
+                        <area title="제기동" coords="2561,692,25" class="1호선" shape="circle">
+                        <area title="신설동" coords="2492,692,25" class="1호선 2호선 우이신설경전철" shape="circle">
+                        <area title="동묘앞" coords="2403,692,25" class="1호선 6호선" shape="circle">
+                        <area title="동대문" coords="2311,692,25" class="1호선 4호선" shape="circle">
+                        <area title="종로5가" coords="2118,692,25" class="1호선" shape="circle">
+                        <area title="종로3가" coords="1920,692,25" class="1호선 3호선 5호선" shape="circle">
+                        <area title="종각" coords="1802,768,25" class="1호선" shape="circle">
+                        <area title="시청" coords="1748,870,25" class="1호선 2호선" shape="circle">
+                        <area title="서울역" coords="1748,1008,25" class="1호선 4호선 공항철도" shape="circle">
+                        <area title="남영" coords="1748,1125,25" class="1호선" shape="circle">
+                        <area title="용산" coords="1748,1399,25" class="1호선 경의중앙선" shape="circle">
+                        <area title="노량진" coords="1554,1465,25" class="1호선 9호선" shape="circle">
+                        <area title="대방" coords="1365,1419,25" class="1호선" shape="circle">
+                        <area title="신길" coords="1266,1321,25" class="1호선 5호선" shape="circle">
+                        <area title="영등포" coords="1220,1368,25" class="1호선" shape="circle">
+                        <area title="신도림" coords="1160,1423,25" class="1호선 2호선" shape="circle">
+                        <area title="구로" coords="1129,1460,25" class="1호선" shape="circle">
+                        
+                        <area title="구일" coords="1064,1527,25" class="1호선" shape="circle">
+                        <area title="개봉" coords="1008,1536,25" class="1호선" shape="circle">
+                        <area title="오류동" coords="943,1536,25" class="1호선" shape="circle">
+                        <area title="온수" coords="871,1554,25" class="1호선 7호선" shape="circle">
+                        <area title="역곡" coords="834,1595,25" class="1호선" shape="circle">
+                        <area title="소사" coords="786,1645,25" class="1호선 서해선" shape="circle">
+                        <area title="부천" coords="679,1738,25" class="1호선" shape="circle">
+                        <area title="중동" coords="592,1740,25" class="1호선" shape="circle">
+                        <area title="송내" coords="519,1740,25" class="1호선" shape="circle">
+                        <area title="부개" coords="445,1740,25" class="1호선" shape="circle">
+                        <area title="부평" coords="389,1740,25" class="1호선 인천1호선" shape="circle">
+                        <area title="백운" coords="309,1740,25" class="1호선" shape="circle">
+                        <area title="동암" coords="249,1803,25" class="1호선" shape="circle">
+                        <area title="간석" coords="249,1862,25" class="1호선" shape="circle">
+                        <area title="주안" coords="249,1917,25" class="1호선 인천2호선" shape="circle">
+                        <area title="도화" coords="249,1980,25" class="1호선" shape="circle">
+                        <area title="제물포" coords="341,2082,25" class="1호선" shape="circle">
+                        <area title="도원" coords="442,2082,25" class="1호선" shape="circle">
+                        <area title="동인천" coords="537,2082,25" class="1호선" shape="circle">
+                        <area title="인천" coords="666,2082,25" class="1호선" shape="circle">
+        
+                        <area title="가산디지털단지" coords="1129,1652,25" class="1호선 7호선" shape="circle">
+                        <area title="독산" coords="1129,1767,25" class="1호선" shape="circle">
+                        <area title="금천구청" coords="1129,1838,25" class="1호선" shape="circle">
+                        <area title="광명" coords="1056,1800,25" class="1호선" shape="circle">
+                        <area title="석수" coords="1272,1853,25" class="1호선" shape="circle">
+                        <area title="관악" coords="1399,1927,25" class="1호선" shape="circle">
+                        <area title="안양" coords="1399,2036,25" class="1호선" shape="circle">
+                        <area title="명학" coords="1399,2114,25" class="1호선" shape="circle">
+                        <area title="금정" coords="1399,2257,25" class="1호선 4호선" shape="circle">
+                        <area title="군포" coords="1421,2360,25" class="1호선" shape="circle">
+                        <area title="당정" coords="1471,2408,25" class="1호선" shape="circle">
+                        <area title="의왕" coords="1554,2463,25" class="1호선" shape="circle">
+                        <area title="성균관대" coords="1641,2463,25" class="1호선" shape="circle">
+                        <area title="화서" coords="1724,2463,25" class="1호선" shape="circle">
+                        <area title="수원" coords="1793,2463,25" class="1호선 수인분당선" shape="circle">
+                        <area title="세류" coords="1884,2463,25" class="1호선" shape="circle">
+                        <area title="병점" coords="1976,2463,25" class="1호선" shape="circle">
+                        <area title="서동탄" coords="1376,2386,25" class="1호선" shape="circle">
+                        <area title="세마" coords="2053,2463,25" class="1호선" shape="circle">
+                        <area title="오산대" coords="2139,2463,25" class="1호선" shape="circle">
+                        <area title="오산" coords="2224,2463,25" class="1호선" shape="circle">
+                        <area title="진위" coords="2304,2463,25" class="1호선" shape="circle">
+                        <area title="송탄" coords="2384,2463,25" class="1호선" shape="circle">
+                        <area title="서정리" coords="2469,2463,25" class="1호선" shape="circle">
+                        <area title="지제" coords="2555,2463,25" class="1호선" shape="circle">
+                        <area title="평택" coords="2634,2463,25" class="1호선" shape="circle">
+                        <area title="성환" coords="2714,2463,25" class="1호선" shape="circle">
+                        <area title="직산" coords="2794,2463,25" class="1호선" shape="circle">
+                        <area title="두정" coords="2874,2463,25" class="1호선" shape="circle">
+                        <area title="천안" coords="2957,2463,25" class="1호선" shape="circle">
+                        <area title="봉명" coords="3044,2463,25" class="1호선" shape="circle">
+                        <area title="쌍용" coords="3125,2463,25" class="1호선" shape="circle">
+                        <area title="아산" coords="3216,2463,25" class="1호선" shape="circle">
+                        <area title="배방" coords="3296,2463,25" class="1호선" shape="circle">
+                        <area title="온양온천" coords="3402,2463,25" class="1호선" shape="circle">
+                        <area title="신창" coords="3509,2463,25" class="1호선" shape="circle">
+                        
+    
+                        <!-- 2호선 -->
+                        <area title="신설동" coords="2492,692,25" class="1호선 2호선 우이신설경전철" shape="circle">
+                        <area title="용두" coords="2561,760,25" class="2호선" shape="circle">
+                        <area title="신답" coords="2624,822,25" class="2호선" shape="circle">
+                        <area title="용답" coords="2812,1065,25" class="2호선" shape="circle">
+                        <area title="성수" coords="2807,1182,25" class="2호선" shape="circle">
+                        <area title="건대입구" coords="3101,1245,25" class="2호선 7호선" shape="circle">
+                        <area title="구의" coords="3202,1287,25" class="2호선" shape="circle">
+                        <area title="강변" coords="3283,1369,25" class="2호선" shape="circle">
+                        <area title="잠실나루" coords="3346,1512,25" class="2호선" shape="circle">
+                        <area title="잠실" coords="3346,1635,25" class="2호선 8호선" shape="circle">
+                        <area title="잠실새내" coords="3231,1768,25" class="2호선" shape="circle">
+                        <area title="종합운동장" coords="3045,1768,25" class="2호선" shape="circle">
+                        <area title="삼성" coords="2893,1768,25" class="2호선" shape="circle">
+                        <area title="선릉" coords="2714,1768,25" class="2호선 수인분당선" shape="circle">
+                        <area title="역삼" coords="2582,1768,25" class="2호선" shape="circle">
+                        <area title="강남" coords="2443,1768,25" class="2호선 신분당" shape="circle">
+                        <area title="교대" coords="2298,1768,25" class="2호선 3호선" shape="circle">
+                        <area title="서초" coords="2151,1768,25" class="2호선" shape="circle">
+                        <area title="방배" coords="2025,1768,25" class="2호선" shape="circle">
+                        <area title="사당" coords="1884,1768,25" class="2호선 4호선" shape="circle">
+                        <area title="낙성대" coords="1806,1768,25" class="2호선" shape="circle">
+                        <area title="서울대입구" coords="1690,1768,25" class="2호선" shape="circle">
+                        <area title="봉천" coords="1564,1768,25" class="2호선" shape="circle">
+                        <area title="신림" coords="1450,1768,25" class="2호선" shape="circle">
+                        <area title="신대방" coords="1327,1768,25" class="2호선" shape="circle">
+                        <area title="구로디지털단지" coords="1221,1739,25" class="2호선" shape="circle">
+                        <area title="대림" coords="1221,1655,25" class="2호선 7호선" shape="circle">
+                        <area title="신도림" coords="1160,1423,25" class="1호선 2호선" shape="circle">
+    
+                        <area title="도림천" coords="974,1380,25" class="2호선" shape="circle">
+                        <area title="양천구청" coords="928,1331,25" class="2호선" shape="circle">
+                        <area title="신정네거리" coords="869,1274,25" class="2호선" shape="circle">
+                        <area title="까치산" coords="774,1176,25" class="2호선 5호선" shape="circle">
+                        
+                        <area title="문래" coords="1102,1289,25" class="2호선" shape="circle">
+                        <area title="영등포구청" coords="1106,1175,25" class="2호선 5호선" shape="circle">
+                        <area title="당산" coords="1226,1134,25" class="2호선 9호선" shape="circle">
+                        <area title="합정" coords="1373,1132,25" class="2호선 6호선" shape="circle">
+                        <area title="홍대입구" coords="1473,1033,25" class="2호선 경의중앙선 공항철도" shape="circle">
+                        <area title="신촌" coords="1473,969,25" class="2호선" shape="circle">
+                        <area title="이대" coords="1473,938,25" class="2호선" shape="circle">
+                        <area title="아현" coords="1472,891,25" class="2호선" shape="circle">
+                        <area title="충정로" coords="1595,870,25" class="2호선 5호선" shape="circle">
+                        <area title="시청" coords="1748,870,25" class="1호선 2호선" shape="circle">
+                        <area title="을지로입구" coords="1838,870,25" class="2호선" shape="circle">
+                        <area title="을지로3가" coords="1921,870,25" class="2호선 3호선" shape="circle">
+                        <area title="을지로4가" coords="2125,870,25" class="2호선 5호선" shape="circle">
+                        <area title="동대문역사문화공원" coords="2245,870,25" class="2호선 4호선 5호선" shape="circle">
+                        <area title="신당" coords="2402,870,25" class="2호선 6호선" shape="circle">
+                        <area title="상왕십리" coords="2532,911,25" class="2호선" shape="circle">
+                        <area title="왕십리" coords="2629,1006,25" class="2호선 5호선 경의중앙선 수인분당선" shape="circle">
+                        <area title="한양대" coords="2703,1083,25" class="2호선" shape="circle">
+                        <area title="뚝섬" coords="2757,1134,25" class="2호선" shape="circle">
+                        
+                        <!-- 3호선 -->
+                        <area title="대화" coords="226,411,25" class="3호선" shape="circle">
+                        <area title="주엽" coords="319,411,25" class="3호선" shape="circle">
+                        <area title="정발산" coords="418,411,25" class="3호선" shape="circle">
+                        <area title="마두" coords="515,411,25" class="3호선" shape="circle">
+                        <area title="백석" coords="611,411,25" class="3호선" shape="circle">
+                        <area title="대곡" coords="695,411,25" class="3호선 경의중앙선" shape="circle">
+                        <area title="화정" coords="765,411,25" class="3호선" shape="circle">
+                        <area title="원당" coords="837,411,25" class="3호선" shape="circle">
+                        <area title="원흥" coords="904,411,25" class="3호선" shape="circle">
+                        <area title="삼송" coords="973,411,25" class="3호선" shape="circle">
+                        <area title="지축" coords="1041,411,25" class="3호선" shape="circle">
+                        <area title="구파발" coords="1113,411,25" class="3호선" shape="circle">
+                        <area title="연신내" coords="1173,411,25" class="3호선 6호선" shape="circle">
+                        <area title="불광" coords="1342,411,25" class="3호선 6호선" shape="circle">
+                        <area title="녹번" coords="1444,411,25" class="3호선" shape="circle">
+                        <area title="홍제" coords="1531,411,25" class="3호선" shape="circle">
+                        <area title="무악재" coords="1618,411,25" class="3호선" shape="circle">
+                        <area title="독립문" coords="1717,465,25" class="3호선" shape="circle">
+                        <area title="경복궁" coords="1776,529,25" class="3호선" shape="circle">
+                        <area title="안국" coords="1836,600,25" class="3호선" shape="circle">
+                        <area title="종로3가" coords="1920,692,25" class="1호선 3호선 5호선" shape="circle">
+                        <area title="을지로3가" coords="1921,870,25" class="2호선 3호선" shape="circle">
+                        <area title="충무로" coords="2049,1014,25" class="3호선 4호선" shape="circle">
+                        <area title="동대입구" coords="2162,1119,25" class="3호선" shape="circle">
+                        <area title="약수" coords="2261,1212,25" class="3호선 6호선" shape="circle">
+                        <area title="금호" coords="2298,1281,25" class="3호선" shape="circle">
+                        <area title="옥수" coords="2298,1354,25" class="3호선 경의중앙선" shape="circle">
+                        <area title="압구정" coords="2298,1479,25" class="3호선" shape="circle">
+                        <area title="신사" coords="2298,1535,25" class="3호선" shape="circle">
+                        <area title="잠원" coords="2298,1591,25" class="3호선" shape="circle">
+                        <area title="고속터미널" coords="2298,1652,25" class="3호선 7호선 9호선" shape="circle">
+                        <area title="교대" coords="2298,1768,25" class="2호선" shape="circle">
+                        <area title="남부터미널" coords="2354,1819,25" class="3호선" shape="circle">
+                        <area title="양재" coords="2442,1877,25" class="3호선 신분당선" shape="circle">
+                        <area title="매봉" coords="2571,1877,25" class="3호선" shape="circle">
+                        <area title="도곡" coords="2714,1877,25" class="3호선 수인분당선" shape="circle">
+                        <area title="대치" coords="2834,1877,25" class="3호선" shape="circle">
+                        <area title="학여울" coords="2949,1877,25" class="3호선" shape="circle">
+                        <area title="대청" coords="3095,1877,25" class="3호선" shape="circle">
+                        <area title="일원" coords="3251,1877,25" class="3호선" shape="circle">
+                        <area title="수서" coords="3419,1976,25" class="3호선 수인분당선" shape="circle">
+                        <area title="가락시장" coords="3563,1849,25" class="3호선 8호선" shape="circle">
+                        <area title="경찰병원" coords="3643,1782,25" class="3호선" shape="circle">
+                        <area title="오금" coords="3756,1708,25" class="3호선 5호선" shape="circle">
+    
+                        <!-- 4호선 -->
+                        <area title="당고개" coords="3277,227,25" class="4호선" shape="circle">
+                        <area title="상계" coords="3238,305,25" class="4호선" shape="circle">
+                        <area title="노원" coords="2983,364,25" class="4호선 7호선" shape="circle">
+                        <area title="창동" coords="2858,362,25" class="1호선 4호선" shape="circle">
+                        <area title="쌍문" coords="2748,364,25" class="4호선" shape="circle">
+                        <area title="수유" coords="2666,364,25" class="4호선" shape="circle">
+                        <area title="미아" coords="2545,364,25" class="4호선" shape="circle">
+                        <area title="미아사거리" coords="2434,364,25" class="4호선" shape="circle">
+                        <area title="길음" coords="2351,364,25" class="4호선" shape="circle">
+                        <area title="성신여대입구" coords="2309,390,25" class="4호선 우이신설경전철" shape="circle">
+                        <area title="한성대입구" coords="2309,483,25" class="4호선" shape="circle">
+                        <area title="혜화" coords="2309,560,25" class="4호선" shape="circle">
+                        <area title="동대문" coords="2311,692,25" class="1호선 4호선" shape="circle">
+                        <area title="동대문역사문화공원" coords="2245,870,25" class="2호선 4호선 5호선" shape="circle">
+                        <area title="충무로" coords="2049,1014,25" class="3호선 4호선" shape="circle">
+                        <area title="명동" coords="1941,1014,25" class="4호선" shape="circle">
+                        <area title="회현" coords="1859,1014,25" class="4호선" shape="circle">
+                        <area title="서울역" coords="1748,1008,25" class="1호선 4호선 공항철도" shape="circle">
+                        <area title="숙대입구" coords="1836,1104,25" class="4호선" shape="circle">
+                        <area title="삼각지" coords="1885,1220,25" class="4호선 6호선" shape="circle">
+                        <area title="신용산" coords="1885,1326,25" class="4호선" shape="circle">
+                        <area title="이촌" coords="1885,1407,25" class="4호선 경의중앙선" shape="circle">
+                        <area title="동작" coords="1885,1547,25" class="4호선 9호선" shape="circle">
+                        <area title="총신대입구" coords="1885,1652,25" class="4호선 7호선" shape="circle">
+                        <area title="사당" coords="1885,1768,25" class="4호선" shape="circle">
+                        <area title="남태령" coords="1885,1836,25" class="4호선" shape="circle">
+                        <area title="선바위" coords="1882,1900,25" class="4호선" shape="circle">
+                        <area title="경마공원" coords="1855,1945,25" class="4호선" shape="circle">
+                        <area title="대공원" coords="1805,2000,25" class="4호선" shape="circle">
+                        <area title="과천" coords="1760,2051,25" class="4호선" shape="circle">
+                        <area title="정부과천청사" coords="1708,2108,25" class="4호선" shape="circle">
+                        <area title="인덕원" coords="1650,2169,25" class="4호선" shape="circle">
+                        <area title="평촌" coords="1589,2231,25" class="4호선" shape="circle">
+                        <area title="범계" coords="1509,2258,25" class="4호선" shape="circle">
+                        <area title="금정" coords="1399,2257,25" class="1호선 4호선" shape="circle">
+                        <area title="산본" coords="1344,2350,25" class="4호선" shape="circle">
+                        <area title="수리산" coords="1319,2407,25" class="4호선" shape="circle">
+                        <area title="대야미" coords="1245,2411,25" class="4호선" shape="circle">
+                        <area title="반월" coords="1168,2411,25" class="4호선" shape="circle">
+                        <area title="상록수" coords="1086,2411,25" class="4호선" shape="circle">
+                        <area title="한대앞" coords="1005,2411,25" class="4호선 수인분당선" shape="circle">
+                        <area title="중앙" coords="854,2411,25" class="4호선 수인분당선" shape="circle">
+                        <area title="고잔" coords="782,2411,25" class="4호선 수인분당선" shape="circle">
+                        <area title="초지" coords="706,2411,25" class="4호선 수인분당선 서해선" shape="circle">
+                        <area title="안산" coords="629,2411,25" class="4호선 수인분당선" shape="circle">
+                        <area title="신길온천" coords="527,2411,25" class="4호선 수인분당선" shape="circle">
+                        <area title="정왕" coords="429,2411,25" class="4호선 수인분당선" shape="circle">
+                        <area title="오이도" coords="309,2411,25" class="4호선 수인분당선" shape="circle">
+                        
+                        <!-- 5호선 -->
+                        <area title="방화" coords="699,791,25" class="5호선" shape="circle">
+                        <area title="개화산" coords="599,791,25" class="5호선" shape="circle">
+                        <area title="김포공항" coords="503,933,25" class="5호선 9호선 공항철도 김포도시철도" shape="circle">
+                        <area title="송정" coords="507,987,25" class="5호선" shape="circle">
+                        <area title="마곡" coords="507,1040,25" class="5호선" shape="circle">
+                        <area title="발산" coords="507,1094,25" class="5호선" shape="circle">
+                        <area title="우장산" coords="598,1176,25" class="5호선" shape="circle">
+                        <area title="화곡" coords="676,1176,25" class="5호선" shape="circle">
+                        <area title="까치산" coords="774,1176,25" class="2호선 5호선" shape="circle">
+                        <area title="신정" coords="849,1176,25" class="5호선" shape="circle">
+                        <area title="목동" coords="912,1176,25" class="5호선" shape="circle">
+                        <area title="오목교" coords="982,1176,25" class="5호선" shape="circle">
+                        <area title="양평" coords="1051,1176,25" class="5호선" shape="circle">
+                        <area title="영등포구청" coords="1106,1175,25" class="2호선 5호선" shape="circle">
+                        <area title="영등포시장" coords="1173,1252,25" class="5호선" shape="circle">
+                        <area title="신길" coords="1266,1321,25" class="1호선 5호선" shape="circle">
+                        <area title="여의도" coords="1417,1321,25" class="5호선 9호선" shape="circle">
+                        <area title="여의나루" coords="1511,1321,25" class="5호선" shape="circle">
+                        <area title="마포" coords="1592,1293,25" class="5호선" shape="circle">
+                        <area title="공덕" coords="1598,1220,25" class="5호선 9호선 경의중앙선 공항철도" shape="circle">
+                        <area title="애오개" coords="1592,915,25" class="5호선" shape="circle">
+                        <area title="충정로" coords="1592,871,25" class="5호선" shape="circle">
+                        <area title="서대문" coords="1592,756,25" class="5호선" shape="circle">
+                        <area title="광화문" coords="1715,696,25" class="5호선" shape="circle">
+                        <area title="종로3가" coords="1920,692,25" class="1호선 3호선 5호선" shape="circle">
+                        <area title="을지로4가" coords="2125,870,25" class="2호선 5호선" shape="circle">
+                        <area title="동대문역사문화공원" coords="2245,870,25" class="2호선 4호선 5호선" shape="circle">
+                        <area title="청구" coords="2281,1007,25" class="5호선 6호선" shape="circle">
+                        <area title="신금호" coords="2410,1007,25" class="5호선" shape="circle">
+                        <area title="행당" coords="2517,1007,25" class="5호선" shape="circle">
+                        <area title="왕십리" coords="2629,1006,25" class="2호선 5호선 경의중앙선 수인분당선" shape="circle">
+                        <area title="마장" coords="2733,1007,25" class="5호선" shape="circle">
+                        <area title="답십리" coords="2896,1007,25" class="5호선" shape="circle">
+                        <area title="장한평" coords="3011,1007,25" class="5호선" shape="circle">
+                        <area title="군자" coords="3101,1007,25" class="5호선 7호선" shape="circle">
+                        <area title="아차산" coords="3263,1098,25" class="5호선" shape="circle">
+                        <area title="광나루" coords="3373,1208,25" class="5호선" shape="circle">
+                        <area title="천호" coords="3581,1392,25" class="5호선 8호선" shape="circle">
+                        <area title="강동" coords="3669,1393,25" class="5호선" shape="circle">
+    
+                        <area title="길동" coords="3688,1327,25" class="5호선" shape="circle">
+                        <area title="굽은다리" coords="3707,1270,25" class="5호선" shape="circle">
+                        <area title="명일" coords="3729,1200,25" class="5호선" shape="circle">
+                        <area title="고덕" coords="3748,1145,25" class="5호선" shape="circle">
+                        <area title="상일동" coords="3765,1095,25" class="5호선" shape="circle">
+                        <area title="강일" coords="3901,1067,25" class="5호선" shape="circle">
+                        <area title="미사" coords="3989,1007,25" class="5호선" shape="circle">
+                        <area title="하남풍산" coords="3989,947,25" class="5호선" shape="circle">
+                        <area title="하남시청" coords="3989,868,25" class="5호선" shape="circle">
+                        <area title="하남검단산" coords="3989,809,25" class="5호선" shape="circle">
+    
+                        <area title="둔촌동" coords="3685,1460,25" class="5호선" shape="circle">
+                        <area title="올림픽공원" coords="3723,1582,25" class="5호선 9호선" shape="circle">
+                        <area title="방이" coords="3743,1658,25" class="5호선" shape="circle">
+                        <area title="오금" coords="3756,1708,25" class="3호선 5호선" shape="circle">
+                        <area title="개롱" coords="3802,1776,25" class="5호선" shape="circle">
+                        <area title="거여" coords="3867,1776,25" class="5호선" shape="circle">
+                        <area title="마천" coords="3930,1776,25" class="5호선" shape="circle">
+    
+                        <!-- 6호선 -->
+                        <area title="봉화산" coords="3356,548,25" class="6호선" shape="circle">
+                        <area title="화랑대" coords="3219,548,25" class="6호선" shape="circle">
+                        <area title="태릉입구" coords="3099,548,25" class="6호선 7호선" shape="circle">
+                        <area title="석계" coords="2841,548,25" class="1호선 6호선" shape="circle">
+                        <area title="돌곶이" coords="2787,548,25" class="6호선" shape="circle">
+                        <area title="상월곡" coords="2701,548,25" class="6호선" shape="circle">
+                        <area title="월곡" coords="2593,548,25" class="6호선" shape="circle">
+                        <area title="고려대" coords="2507,548,25" class="6호선" shape="circle">
+                        <area title="안암" coords="2423,548,25" class="6호선" shape="circle">
+                        <area title="보문" coords="2402,597,25" class="6호선 우이신설경전철" shape="circle">
+                        <area title="창신" coords="2402,693,25" class="6호선" shape="circle">
+                        <area title="동묘앞" coords="2403,692,25" class="1호선 6호선" shape="circle">
+                        <area title="신당" coords="2402,870,25" class="2호선 6호선" shape="circle">
+                        <area title="청구" coords="2281,1007,25" class="5호선 6호선" shape="circle">
+                        <area title="약수" coords="2261,1212,25" class="3호선 6호선" shape="circle">
+                        <area title="버티고개" coords="2206,1218,25" class="6호선" shape="circle">
+                        <area title="한강진" coords="2118,1218,25" class="6호선" shape="circle">
+                        <area title="이태원" coords="2031,1218,25" class="6호선" shape="circle">
+                        <area title="녹사평" coords="1943,1218,25" class="6호선" shape="circle">
+                        <area title="삼각지" coords="1885,1220,25" class="4호선 6호선" shape="circle">
+                        <area title="효창공원앞" coords="1687,1220,25" class="6호선 경의중앙선" shape="circle">
+                        <area title="공덕" coords="1598,1220,25" class="5호선 9호선 경의중앙선 공항철도" shape="circle">
+                        <area title="대흥" coords="1548,1218,25" class="6호선" shape="circle">
+                        <area title="광흥창" coords="1471,1218,25" class="6호선" shape="circle">
+                        <area title="상수" coords="1422,1180,25" class="6호선" shape="circle">
+                        <area title="합정" coords="1373,1132,25" class="2호선 6호선" shape="circle">
+                        <area title="망원" coords="1297,1048,25" class="6호선" shape="circle">
+                        <area title="마포구청" coords="1257,922,25" class="6호선" shape="circle">
+                        <area title="월드컵경기장" coords="1257,849,25" class="6호선" shape="circle">
+                        <area title="디지털미디어시티" coords="1257,792,25" class="6호선 경의중앙선 공항철도" shape="circle">
+                        <area title="증산" coords="1257,693,25" class="6호선" shape="circle">
+                        <area title="새절" coords="1257,608,25" class="6호선" shape="circle">
+                        <area title="응암" coords="1257,493,25" class="6호선" shape="circle">
+                        <area title="역촌" coords="1315,466,25" class="6호선" shape="circle">
+                        <area title="불광" coords="1342,411,25" class="3호선 6호선" shape="circle">
+                        <area title="독바위" coords="1259,313,25" class="6호선" shape="circle">
+                        <area title="연신내" coords="1173,411,25" class="3호선 6호선" shape="circle">
+                        <area title="구산" coords="1205,468,25" class="6호선" shape="circle">
+    
+                        <!-- 7호선 -->
+                        <area title="장암" coords="3017,101,25" class="7호선" shape="circle">
+                        <area title="도봉산" coords="2858,160,25" class="1호선 7호선" shape="circle">
+                        <area title="수락산" coords="2913,245,25" class="7호선" shape="circle">
+                        <area title="마들" coords="2944,296,25" class="7호선" shape="circle">
+                        <area title="노원" coords="2983,364,25" class="4호선 7호선" shape="circle">
+                        <area title="중계" coords="3022,422,25" class="7호선" shape="circle">
+                        <area title="하계" coords="3021,420,25" class="7호선" shape="circle">
+                        <area title="공릉" coords="3074,504,25" class="7호선" shape="circle">
+                        <area title="태릉입구" coords="3099,548,25" class="6호선 7호선" shape="circle">
+                        <area title="먹골" coords="3099,621,25" class="7호선" shape="circle">
+                        <area title="중화" coords="3099,663,25" class="7호선" shape="circle">
+                        <area title="상봉" coords="3099,693,25" class="7호선 경의중앙선 경춘선" shape="circle">
+                        <area title="면목" coords="3099,750,25" class="7호선" shape="circle">
+                        <area title="사가정" coords="3099,802,25" class="7호선" shape="circle">
+                        <area title="용마산" coords="3099,883,25" class="7호선" shape="circle">
+                        <area title="군자" coords="3101,1007,25" class="5호선 7호선" shape="circle">
+                        <area title="어린이대공원" coords="3099,1106,25" class="7호선" shape="circle">
+                        <area title="건대입구" coords="3101,1245,25" class="2호선 7호선" shape="circle">
+                        <area title="뚝섬유원지" coords="3085,1288,25" class="7호선" shape="circle">
+                        <area title="청담" coords="2994,1375,25" class="7호선" shape="circle">
+                        <area title="강남구청" coords="2915,1455,25" class="7호선 수인분당선" shape="circle">
+                        <area title="학동" coords="2746,1549,25" class="7호선" shape="circle">
+                        <<area title="논현" coords="2627,1549,25" class="7호선" shape="circle">
+                        <area title="반포" coords="2507,1549,25" class="7호선" shape="circle">
+                        <area title="고속터미널" coords="2298,1652,25" class="3호선 7호선 9호선" shape="circle">
+                        <area title="내방" coords="2116,1652,25" class="7호선" shape="circle">
+                        <area title="총신대입구" coords="1885,1652,25" class="4호선 7호선" shape="circle">
+                        <area title="남성" coords="1819,1652,25" class="7호선" shape="circle">
+                        <area title="숭실대입구" coords="1733,1652,25" class="7호선" shape="circle">
+                        <area title="상도" coords="1646,1652,25" class="7호선" shape="circle">
+                        <area title="장승배기" coords="1560,1652,25" class="7호선" shape="circle">
+                        <area title="신대방삼거리" coords="1474,1652,25" class="7호선" shape="circle">
+                        <area title="보라매" coords="1387,1652,25" class="7호선" shape="circle">
+                        <area title="신풍" coords="1301,1652,25" class="7호선" shape="circle">
+                        <area title="대림" coords="1221,1655,25" class="2호선 7호선" shape="circle">
+                        <area title="남구로" coords="1180,1652,25" class="7호선" shape="circle">
+                        <area title="가산디지털단지" coords="1129,1652,25" class="1호선 7호선" shape="circle">
+                        <area title="철산" coords="1034,1652,25" class="7호선" shape="circle">
+                        <area title="광명사거리" coords="955,1639,25" class="7호선" shape="circle">
+                        <area title="천왕" coords="915,1598,25" class="7호선" shape="circle">
+                        <area title="온수" coords="871,1554,25" class="1호선 7호선" shape="circle">
+                        <area title="까치울" coords="782,1458,25" class="7호선" shape="circle">
+                        <area title="부천종합운동장" coords="776,1387,25" class="7호선" shape="circle">
+                        <area title="춘의" coords="770,1328,25" class="7호선" shape="circle">
+                        <area title="신중동" coords="723,1282,25" class="7호선" shape="circle">
+                        <area title="부천시청" coords="644,1273,25" class="7호선" shape="circle">
+                        <area title="상동" coords="566,1322,25" class="7호선" shape="circle">
+                        <area title="삼산체육관" coords="566,1379,25" class="7호선" shape="circle">
+                        <area title="굴포천" coords="513,1424,25" class="7호선" shape="circle">
+                        <area title="부평구청" coords="388,1532,25" class="7호선 인천1호선" shape="circle">
+                        <area title="산곡" coords="271,1530,25" class="1호선 7호선" shape="circle">
+                        <area title="석남" coords="86,1530,25" class="1호선 7호선" shape="circle">
+
+                        <!-- 9호선 -->
+                        <area title="암사" coords="3585,1242,25" class="8호선" shape="circle">
+                        <area title="천호" coords="3581,1392,25" class="5호선 8호선" shape="circle">
+                        <area title="강동구청" coords="3524,1449,25" class="8호선" shape="circle">
+                        <area title="암사" coords="3448,1528,25" class="8호선" shape="circle">
+                        <area title="몽촌토성" coords="3581,1392,25" class="8호선" shape="circle">
+                        <area title="천호" coords="3581,1392,25" class="8호선" shape="circle">
+                        <area title="잠실" coords="3346,1635,25" class="2호선 8호선" shape="circle">
+                        <area title="석촌" coords="3418,1708,25" class="8호선 9호선" shape="circle">
+                        <area title="송파" coords="3490,1774,25" class="8호선" shape="circle">
+                        <area title="가락시장" coords="3563,1849,25" class="3호선 8호선" shape="circle">
+                        <area title="문정" coords="3606,1890,25" class="8호선" shape="circle">
+                        <area title="장지" coords="3654,1935,25" class="8호선" shape="circle">
+                        <area title="복정" coords="3697,1977,25" class="8호선 수인분당선" shape="circle">
+                        <area title="산성" coords="3762,2042,25" class="8호선" shape="circle">
+                        <area title="남한산성입구" coords="3792,2099,25" class="8호선" shape="circle">
+                        <area title="단대오거리" coords="3791,2173,25" class="8호선" shape="circle">
+                        <area title="신흥" coords="3713,2187,25" class="8호선" shape="circle">
+                        <area title="수진" coords="3613,2186,25" class="8호선" shape="circle">
+                        <area title="모란" coords="3452,2083,25" class="8호선 수인분당선" shape="circle">
+
+                        <!-- 9호선 -->
+                        <area title="개화" coords="380,871,25" class="9호선" shape="circle">
+                        <area title="김포공항" coords="503,933,25" class="5호선 9호선 공항철도 김포도시철도" shape="circle">
+                        <area title="공항시장" coords="612,892,25" class="9호선" shape="circle">
+                        <area title="신방화" coords="708,893,25" class="9호선" shape="circle">
+                        <area title="마곡나루" coords="755,902,25" class="9호선 공항철도" shape="circle">
+                        <area title="양천향교" coords="755,973,25" class="9호선" shape="circle">
+                        <area title="가양" coords="881,1050,25" class="9호선" shape="circle">
+                        <area title="증미" coords="952,1050,25" class="9호선" shape="circle">
+                        <area title="등촌" coords="1020,1050,25" class="9호선" shape="circle">
+                        <area title="염창" coords="1089,1050,25" class="9호선" shape="circle">
+                        <area title="신목동" coords="1149,1060,25" class="9호선" shape="circle">
+                        <area title="" coords="881,1050,25" class="9호선" shape="circle">
+                        <area title="" coords="881,1050,25" class="9호선" shape="circle">
+                        
+
+
+                    </map>
+        
+                    <script> /* 크기 변화에도 좌표가 잘 맞게 width 100% 설정 */
+                        $(function(){
+                            $('img[usemap]').rwdImageMaps();
+                            $("#img").width("100%");
+                        });
+                    </script>
+        </div>
+        
+        <!-- 역 정보 (역 클릭시 나타남)-->
+
+        <!--
+            DB 작업
+            - 이전역, 이번역, 다음역 정보 표시
+            - 이전역, 다음역 click시, 해당역으로 정보 바뀜 
+                (이전역/다음역 의 이름을 가진 <area>를 click한 효과를 줄 것인지(코드 표현 가능하나 search 시간 걸림), 
+                정보만 바꿀 것인지(?) 선택해야 할 듯)
+            - 호선 버튼 누르면 정보(이전역, 다음역, 혼잡도) 변경. (버튼, 색 바뀜은 프론트 엔드 처리)
+            - xx:xx 기준 표시
+            - 상행, 하행 표시 (..행)
+            - 도착까지 남은 시간 (xx분 xx초, 곧 도착 등)
+            - 칸별 혼잡도. 0, 1, 2의 값으로 받으면 색으로 바꾸는 작업은 프론트엔드에서 함
+            - 갱신 버튼 누르면 정보 갱신
+        -->
+        <div id="StInfo" class="contentWrapper">
+        <div class="content">
+            <div class="topMenu">
+                <!--호선(line) toggle 버튼 (button을 눌러 호선을 바꿀 수 있다) -->
+                <!-- 호선 button 표시와 click시 색 변경은 처리 예정, but 눌렀을 때 정보(칸별혼잡도)가 바뀌는 것은 db처리 필요-->
+                <div class="button-container"> <!-- Clickable button 나열 -->
+                    <ul>
+                        <li>
+                            <button class="line-toggle-button" style="background: #0EA349; border: none; border: solid 1px;">
+                                <span class="line-text-focus">2</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="line-toggle-button" style="background-color:#FFFFFF; border: solid 1px #00a9e0">
+                                <span class="line-text-nfocus">4</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <i class="fas fa-sync-alt"></i>  <!-- 정보 갱신 버튼, 클릭시 정보 갱신, index.html에 누르면 회전하는 css 삽입 예정-->
+            </div>
+    
+            <!-- 역 정보 표시 (이전역, 현재역, 다음역) / 이전역 다음역 클릭시 정보가 바뀌어야 함.-->
+            <div class="station-info" style="background: #0EA349; border: none;">
+                <!-- 이전 역 link -->
+                <div class="fStation-section">
+                    <i class="fas fa-angle-left"></i>
+                    <div id="fStation-name">
+                        <span>이전역</span>
+                    </div>
+                </div>
+
+                <!-- 현재 역 name -->
+                <div class="station-section">
+                    <div class="station-namebox">
+                        <span>이번역</span> <!--최대 9글자 가능-->
+                    </div>
+                </div>
+
+                <!--다음 역 link-->
+                <div class="nStation-section">
+                    <div class="nStation-name">
+                        <span>다음역</span>
+                    </div>
+                    <i class="fas fa-angle-right"></i>
+                </div>
+            </div>
+            <hr>
+    
+            <!-- 칸별혼잡도 표시 -->
+            <div class="congestion-by-comp">
+                <div class="cong-title">
+                    <span>칸별혼잡도</span>
+                </div>
+                
+                <div class="cong-container">
+                    <!--기준 시간-->
+                    <div class="standard-time">00:00 기준</div>
+                    <div class="contentWrapper">
+                        <!-- 상행 정보 -->
+                        <div class="upline">
+                            <div class="upContainer">
+                                <div class="line-title"> <!-- 도착 행(상행)-->
+                                    <span>ㅁㅁㅁ행</span>
+                                </div>
+                                <div class="remainTime"> <!-- 도착까지 남은 시간 -->
+                                    <span>00분 00초</span>
+                                </div>
+                                <div class="show-congestion"> <!-- 후에 0, 1, 2값을 받아 색 변경이 될 구간 -->
+                                    <div class="cong up-1" style="background-color: #868686"></div>
+                                    <div class="cong up-2" style="background-color: #868686"></div>
+                                    <div class="cong up-3" style="background-color: #868686"></div>
+                                    <div class="cong up-4" style="background-color: #868686"></div>
+                                    <div class="cong up-5" style="background-color: #868686"></div>
+                                    <div class="cong up-6" style="background-color: #868686"></div>
+                                    <div class="cong up-7" style="background-color: #868686"></div>
+                                    <div class="cong up-8" style="background-color: #868686"></div>
+                                    <div class="cong up-9" style="background-color: #868686"></div>
+                                    <div class="cong up-10" style="background-color: #868686"></div>
+    
+                                    <div></div> <!-- 칸 숫자 표시 (건들지 않아도 O)-->
+                                    <div class="compNum">1</div>
+                                    <div class="compNum">2</div>
+                                    <div class="compNum">3</div>
+                                    <div class="compNum">4</div>
+                                    <div class="compNum">5</div>
+                                    <div class="compNum">6</div>
+                                    <div class="compNum">7</div>
+                                    <div class="compNum">8</div>
+                                    <div class="compNum">9</div>
+                                    <div class="compNum">10</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 하행선 표시-->
+                        <div class="downline">
+                            <div class="downContainer">
+                                <div class="line-title">
+                                    <span>ㅁㅁㅁ행</span> <!-- 도착 행(하행)-->
+                                </div>
+                                <div class="remainTime"> <!-- 도착까지 남은 시간 -->
+                                    <span>00분 00초</span>
+                                </div>
+                                <div class="show-congestion"> <!-- 복잡도 색 표시 구간 -->
+                                    <div class="cong down-1" style="background-color: #868686"></div>
+                                    <div class="cong down-2" style="background-color: #868686"></div>
+                                    <div class="cong down-3" style="background-color: #868686"></div>
+                                    <div class="cong down-4" style="background-color: #868686"></div>
+                                    <div class="cong down-5" style="background-color: #868686"></div>
+                                    <div class="cong down-6" style="background-color: #868686"></div>
+                                    <div class="cong down-7" style="background-color: #868686"></div>
+                                    <div class="cong down-8" style="background-color: #868686"></div>
+                                    <div class="cong down-9" style="background-color: #868686"></div>
+                                    <div class="cong down-10" style="background-color: #868686"></div>
+        
+                                    <div></div> <!-- 칸 숫자 표시 -->
+                                    <div class="compNum">1</div>
+                                    <div class="compNum">2</div>
+                                    <div class="compNum">3</div>
+                                    <div class="compNum">4</div>
+                                    <div class="compNum">5</div>
+                                    <div class="compNum">6</div>
+                                    <div class="compNum">7</div>
+                                    <div class="compNum">8</div>
+                                    <div class="compNum">9</div>
+                                    <div class="compNum">10</div>
+                                </div>
+                            </div>                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+</body>
+
+</html>
