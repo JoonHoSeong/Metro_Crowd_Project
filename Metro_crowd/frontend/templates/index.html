@@ -22,8 +22,11 @@
     <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/header.css') }}" rel="stylesheet">
 
-    <script> /* Test용 코드(클릭 잘 되는지) + 클릭시 역 정보 div 나타남 */
+
+    <script>
         $(document).ready(function(){
+             $("#header").load("{{ url_for('static', filename='src/header.html') }}");
+
             var StInfo = document.getElementById('StInfo');
             StInfo.style.visibility='hidden'; //deafult-"contentWrapper" hidden상태
 
@@ -32,13 +35,24 @@
                 var lineArr = lines.split(' '); //역에 해당하는 호선 문자열을 담은 Arr
                 var stName = $(this).attr('title'); //클릭한 역 이름
 
-                console.log(stName);
+                //console.log(stName);
                 //alert(stName);
                 lineArr.forEach(function(element){ //역의 모든 호선을 출력
-                    console.log(element+"!");
+                    //console.log(element+"!");
                 });
                 
                 StInfo.style.visibility='visible'; //클릭시, "contentWrapper" visible
+
+                let station = {
+                    'name': stName,
+                }
+                const request = new XMLHttpRequest()
+                request.open('get', `/info/${JSON.stringify(station)}`)
+                request.onload = () => {
+                    const message = request.responseText
+                    console.log(message)
+                }
+                request.send()
             });
         });
     </script>
@@ -52,23 +66,7 @@
 
 <body>
     <div class="wrapper">
-        <div class="headerWrapper">
-
-            <div class="titlebar">
-                <div class="title">Metro Map</div> <!-- 임시 title -->
-            </div>
-            <div class="menubar"> <!-- 클릭시 search-staion.html 로 넘어감. 실질적인 기능은 X-->
-                <div class="searchbox" onclick="location.href='search-station.html'">
-                    <div class="search-title">
-                        <span>지하철역 검색</span>
-                    </div>
-                    <div class="search-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        <div id="header"></div>
 
         <!--map section-->
         <div class="mapWrapper">

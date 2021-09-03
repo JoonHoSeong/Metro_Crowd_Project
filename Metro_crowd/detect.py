@@ -194,6 +194,7 @@ def run(weights='yolov5x6.pt',  # model.pt path(s)
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
+                    person = np.append(person, [(int(n))])
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
@@ -214,9 +215,9 @@ def run(weights='yolov5x6.pt',  # model.pt path(s)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
-            open(txt_path + '_result.txt', 'w').write(str(int(n)))
+#            open(txt_path + '_result.txt', 'w').write(str(int(n)))
             #print('p_cnt : ' ,str(int(n)))
-            person = np.append(person,[(int(n))])
+
             #print(person)
             #print time(inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')

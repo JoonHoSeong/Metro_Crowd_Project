@@ -4,11 +4,12 @@ from yolov5 import Person_count
 
 class train_data:
     def __init__(self):
-        self.train_id = []
-        self.train_updnLine = []
-        self.train_time = []
-        self.train_line = []
-        self. staion_name = '사당'
+        self.train_id = [] #열차 ID
+        self.train_updnLine = [] # 상하행선
+        self.train_time = [] #도착예정시간
+        self.train_line = [] #지하철 호선
+        self.train_destination = [] # 종착지
+        self.staion_name = '사당'
 
     def set_staion(self, station):
         self.station_name = station
@@ -26,30 +27,49 @@ class train_data:
             self.train_updnLine.append(train_dataset.iloc[row]['updnLine'])
             self.train_time.append(train_dataset.iloc[row]['barvlDt'])
             self.train_line.append(train_dataset.iloc[row]['subwayId'])
+            self.train_destination.append(train_dataset.iloc[row]['bstatnId'])  # 종착지하철역ID
 
 
     def Extensions_train_data(self):
-        index = self.train_updnLine.index('내선')
-        return self.train_id[index], self.train_time[index], self.train_line[index]
+        if '내선' in self.train_updnLine :
+            index = self.train_updnLine.index('내선')
+            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+                   self.train_destination[index], self.train_id[index]]
+        else :
+            return [None, None,None,None,None]
 
     def External_train_data(self):
-        index = self.train_updnLine.index('외선')
-        return self.train_id[index], self.train_time[index], self.train_line[index]
+        if '외선' in self.train_updnLine:
+            index = self.train_updnLine.index('외선')
+            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+                   self.train_destination[index], self.train_id[index]]
+        else :
+            return [None, None,None,None,None]
+
 
     def Upward_train_data(self):
-        index = self.train_updnLine.index('상행')
-        return self.train_id[index], self.train_time[index], self.train_line[index]
+        if '상행' in self.train_updnLine:
+            index = self.train_updnLine.index('상행')
+            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+                   self.train_destination[index], self.train_id[index]]
+        else :
+            return [None, None,None,None,None]
+
 
     def Downward_train_data(self):
-        index = self.train_updnLine.index('하행')
-        return self.train_id[index], self.train_time[index], self.train_line[index]
-
+        if '하행' in self.train_updnLine:
+            index = self.train_updnLine.index('하행')
+            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+                   self.train_destination[index], self.train_id[index]]
+        else :
+            return [None, None,None,None,None]
 class crowded_detect:#혼잡도 리스트 반환
     def __init__(self):
-        self.crowd = []
+        self.crowd_list = []
 
-    def using_random_image(self):
+    def load_image(self): #using_random_image
         self.crowd_list = Person_count.run()
 
     def crowd(self):
+        self.load_image()
         return self.crowd_list

@@ -1,3 +1,11 @@
+a {color: #fff; text-decoration: none; outline: none}
+
+a:hover, a:active {text-decoration: none; color:#fff; background-color:#fff;}
+
+.search {
+  width: 98%;
+}
+
 .headerWrapper {
   position: fixed;
   top: 0px;

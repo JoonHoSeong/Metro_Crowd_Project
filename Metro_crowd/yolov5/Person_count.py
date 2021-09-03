@@ -9,7 +9,7 @@ import base64
 import io
 import datetime as time
 import random
-from yolov5 import detect
+import detect
 
 class load_image:
 
