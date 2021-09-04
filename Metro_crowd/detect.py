@@ -58,8 +58,9 @@ def run(weights='yolov5x6.pt',  # model.pt path(s)
         tfl_int8=False,  # INT8 quantized TFLite model
         ):
 
-    global person
+    global person, person_tmp
     person = []
+    person_tmp =[]
 
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -194,7 +195,7 @@ def run(weights='yolov5x6.pt',  # model.pt path(s)
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
-                    person = np.append(person, [(int(n))])
+                    person_tmp = np.append(person, [(int(n))])
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
@@ -215,9 +216,12 @@ def run(weights='yolov5x6.pt',  # model.pt path(s)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
-#            open(txt_path + '_result.txt', 'w').write(str(int(n)))
-            #print('p_cnt : ' ,str(int(n)))
-
+            #사람 미발견시 person 리스트에 0 추가
+            if len(person) == len(person_tmp) :
+                person_tmp = np.append(person, [0])
+                person = np.append(person, [0])
+            else :
+                person = np.append(person,  [(int(n))])
             #print(person)
             #print time(inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -294,7 +298,7 @@ def parse_opt():
 
 def main(opt):
 #    print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
-    check_requirements(exclude=('tensorboard', 'thop'))
+#    check_requirements(exclude=('tensorboard', 'thop'))
     run(**vars(opt))
     return person
 

@@ -1,23 +1,22 @@
-import os, sys
+import os
 import requests, json
 import numpy as np
 import pandas as pd
 from argparse import Namespace
 import mysql.connector
 from PIL import Image
-import base64
 import io
 import datetime as time
 import random
-from yolov5 import detect
+import detect
 
 class load_image:
 
     def __init__(self):
-        self.host = ''
-        self.user = ''
-        self.pw = ''
-        self.db = ''
+        self.host = 'test.cy2mahvlzze7.ap-northeast-2.rds.amazonaws.com'
+        self.user = 'admin'
+        self.pw = 'j6332335'
+        self.db = 'team_project'
 
     def create_random_image_index(self, image_num=10):
         image_index_list = []
@@ -59,54 +58,6 @@ class load_image:
                 connection.close()
                 # print("MySQL connection is closed")
 
-    '''
-        #Not User this code
-        def run_detect(file_dir=None):#save result to txt
-            if file_dir == None:
-                my_command = "python detect.py --weight yolov5s6.pt --conf 0.1 --save-txt --classes 0 --nosave"
-            else :
-                file_dir = " --source " + file_dir
-                my_command = "python detect.py --weight yolov5x6.pt --conf 0.1 --save-txt --classes 0 --nosave" + file_dir
-            detect(my_command)# if you want another result us pred keyword
-
-            parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
-            parser.add_argument('--source', type=str, default='data/images', help='file/dir/URL/glob, 0 for webcam')
-            parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
-            parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
-            parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
-            parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
-            parser.add_argument('--device', default='', help='cuda device, num.e. 0 or 0,1,2,3 or cpu')
-            parser.add_argument('--view-img', action='store_true', help='show results')
-            parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
-            parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
-            parser.add_argument('--save-crop', action='store_true', help='save cropped prediction boxes')
-            parser.add_argument('--nosave', action='store_true', help='do not save images/videos')
-            parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-            parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
-            parser.add_argument('--augment', action='store_true', help='augmented inference')
-            parser.add_argument('--visualize', action='store_true', help='visualize features')
-            parser.add_argument('--update', action='store_true', help='update all models')
-            parser.add_argument('--project', default='runs/detect', help='save results to project/name')
-            parser.add_argument('--name', default='exp', help='save results to project/name')
-            parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
-            parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels')
-            parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences')
-            parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
-            parser.add_argument('--tfl-int8', action='store_true', help='INT8 quantized TFLite model')
-
-
-        def laod_count(path='./runs/detect/exp/labels', image_name='1'):
-            dir = path+'/'+image_name+'_result.txt'
-            file = open(dir, 'r')
-            num = int(file.readline())
-            return num #count num
-
-        def load_bounding_box(path='./runs/detect/exp/labels', image_name='1'):
-            dir = path+'/'+image_name+'.txt'
-            file = open(dir, 'r')
-            boxs = int(file.readline())
-            return boxs #[class confidence x y x y]
-        '''
 
 class person_determination:
     def __init__(self):
@@ -126,12 +77,12 @@ class person_determination:
 
     def person_congresion_list(self, p_num_list=[]):
         congresion_list = []
-        tmp = -1
+        tmp = p_num_list[1]
         for i in range(0,len(p_num_list),2):
-            if p_num_list[i] == p_num_list[i + 1] or p_num_list[i] == tmp:
-                p_num_list[i] = 0
+            #if p_num_list[i] == p_num_list[i] or p_num_list[i] == tmp:
+            #    p_num_list[i] = 0
             p_num = p_num_list[i] + p_num_list[i+1]
-            tmp = p_num_list[i + 1]
+            #tmp = p_num_list[i + 1]
             congresion_list = np.append(congresion_list,self.Determination(p_num))
         return congresion_list
 
@@ -223,95 +174,93 @@ class load_metro_data: # 실시간 지하철 도착정보
         self.station_code = int(data['SearchInfoBySubwayNameService']['row'][0]['STATION_CD'])
 
 
-
-
     def load_API_data(self):
-        if self.check_train_is_avilable_time():
+        #if self.check_train_is_avilable_time():
             #API 연결 상태 확인 및 load
-            info = ['subwayId', 'updnLine', 'trainLineNm',
-                      'subwayHeading','statnFid','statnTid',
-                      'statnId','statnNm','ordkey',
-                      'btrainSttus','barvlDt','btrainNo',
-                      'bstatnId','recptnDt','arvlMsg2',
-                      'arvlMsg3','arvlCd','subwayList',
-                      'statnList','bstatnNm']
-            response_data = pd.DataFrame(columns= info, index=None)
-            if self.data['errorMessage']['code'] == 'INFO-000': #정상작동
-                print("Realtime API Connect Success")
-                for num in range(0, len(self.data['realtimeArrivalList']), 1):
-                    data_list = {"Index" : num
-                    ,'subwayId' : self.data['realtimeArrivalList'][num]['subwayId'] #지하철 호선ID
-                    ,'updnLine' : self.data['realtimeArrivalList'][num]['updnLine']#상하행선 구분(내선:0, 외선:1, 상행, 하행)
-                    ,'trainLineNm'  : self.data['realtimeArrivalList'][num]['trainLineNm']#도착지방면 (성수행 - 구로디지털단지방면)
-                    ,'subwayHeading' : self.data['realtimeArrivalList'][num]['subwayHeading']#내리는문방향(오른쪽,왼쪽)
-                    ,'statnFid' : self.data['realtimeArrivalList'][num]['statnFid']#이전지하철역ID
-                    ,'statnTid' : self.data['realtimeArrivalList'][num]['statnTid']#다음지하철역ID
-                    ,'statnId' : self.data['realtimeArrivalList'][num]['statnId']#지하철역ID
-                    ,'statnNm' : self.data['realtimeArrivalList'][num]['statnNm']#지하철역명
-                    #self.data['realtimeArrivalList'][num]['tmsitCo']#환승노선수
-                    ,'ordkey' : self.data['realtimeArrivalList'][num]['ordkey']#도착예정열차순번
-                    ,'btrainSttus' : self.data['realtimeArrivalList'][num]['btrainSttus']#열차종류(급행,ITX)
-                    ,'barvlDt' : self.data['realtimeArrivalList'][num]['barvlDt']#열차도착예정시간(단위:초)
-                    ,'btrainNo' : self.data['realtimeArrivalList'][num]['btrainNo']#열차번호(현재운행하고 있는 호선별 열차번호)
-                    ,'bstatnId': self.data['realtimeArrivalList'][num]['bstatnId']#종착지하철역ID
-                    ,'recptnDt' : self.data['realtimeArrivalList'][num]['recptnDt']#열차도착정보를 생성한 시각
-                    ,'arvlMsg2' : self.data['realtimeArrivalList'][num]['arvlMsg2']#첫번째도착메세지(전역 진입, 전역 도착 등)
-                    ,'arvlMsg3' : self.data['realtimeArrivalList'][num]['arvlMsg3']#두번째도착메세지(종합운동장 도착, 12분 후 (광명사거리) 등)
-                    ,'arvlCd' : self.data['realtimeArrivalList'][num]['arvlCd']#도착코드(0:진입, 1:도착, 2:출발, 3:전역출발, 4:전역진입, 5:전역도착, 99:운행중)
-                    ,'subwayList' : self.data['realtimeArrivalList'][num]['subwayList']#연계호선ID(1002, 1007 등 연계대상 호상ID)
-                    ,'statnList' : self.data['realtimeArrivalList'][num]['statnList']#연계지하철역ID(1002000233,1007000744)
-                    ,'bstatnNm' : self.data['realtimeArrivalList'][num]['bstatnNm']} #종착지하철역명
+        info = ['subwayId', 'updnLine', 'trainLineNm',
+                  'subwayHeading','statnFid','statnTid',
+                  'statnId','statnNm','ordkey',
+                  'btrainSttus','barvlDt','btrainNo',
+                  'bstatnId','recptnDt','arvlMsg2',
+                  'arvlMsg3','arvlCd','subwayList',
+                  'statnList','bstatnNm']
+        response_data = pd.DataFrame(columns= info, index=None)
+        if self.data['errorMessage']['code'] == 'INFO-000': #정상작동
+            print("Realtime API Connect Success")
+            for num in range(0, len(self.data['realtimeArrivalList']), 1):
+                data_list = {"Index" : num
+                ,'subwayId' : self.data['realtimeArrivalList'][num]['subwayId'] #지하철 호선ID
+                ,'updnLine' : self.data['realtimeArrivalList'][num]['updnLine']#상하행선 구분(내선:0, 외선:1, 상행, 하행)
+                ,'trainLineNm'  : self.data['realtimeArrivalList'][num]['trainLineNm']#도착지방면 (성수행 - 구로디지털단지방면)
+                ,'subwayHeading' : self.data['realtimeArrivalList'][num]['subwayHeading']#내리는문방향(오른쪽,왼쪽)
+                ,'statnFid' : self.data['realtimeArrivalList'][num]['statnFid']#이전지하철역ID
+                ,'statnTid' : self.data['realtimeArrivalList'][num]['statnTid']#다음지하철역ID
+                ,'statnId' : self.data['realtimeArrivalList'][num]['statnId']#지하철역ID
+                ,'statnNm' : self.data['realtimeArrivalList'][num]['statnNm']#지하철역명
+                #self.data['realtimeArrivalList'][num]['tmsitCo']#환승노선수
+                ,'ordkey' : self.data['realtimeArrivalList'][num]['ordkey']#도착예정열차순번
+                ,'btrainSttus' : self.data['realtimeArrivalList'][num]['btrainSttus']#열차종류(급행,ITX)
+                ,'barvlDt' : self.data['realtimeArrivalList'][num]['barvlDt']#열차도착예정시간(단위:초)
+                ,'btrainNo' : self.data['realtimeArrivalList'][num]['btrainNo']#열차번호(현재운행하고 있는 호선별 열차번호)
+                ,'bstatnId': self.data['realtimeArrivalList'][num]['bstatnId']#종착지하철역ID
+                ,'recptnDt' : self.data['realtimeArrivalList'][num]['recptnDt']#열차도착정보를 생성한 시각
+                ,'arvlMsg2' : self.data['realtimeArrivalList'][num]['arvlMsg2']#첫번째도착메세지(전역 진입, 전역 도착 등)
+                ,'arvlMsg3' : self.data['realtimeArrivalList'][num]['arvlMsg3']#두번째도착메세지(종합운동장 도착, 12분 후 (광명사거리) 등)
+                ,'arvlCd' : self.data['realtimeArrivalList'][num]['arvlCd']#도착코드(0:진입, 1:도착, 2:출발, 3:전역출발, 4:전역진입, 5:전역도착, 99:운행중)
+                ,'subwayList' : self.data['realtimeArrivalList'][num]['subwayList']#연계호선ID(1002, 1007 등 연계대상 호상ID)
+                ,'statnList' : self.data['realtimeArrivalList'][num]['statnList']#연계지하철역ID(1002000233,1007000744)
+                ,'bstatnNm' : self.data['realtimeArrivalList'][num]['bstatnNm']} #종착지하철역명
 
-                    response_data = response_data.append(data_list, ignore_index=True)
+                response_data = response_data.append(data_list, ignore_index=True)
 
 
-                return response_data
+            return response_data
 
-            elif self.data['errorMessage']['code'] == 'INFO-100': #인증키 오류
-                print("Authentication key Error : INFO-100")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-500':  # 서버 오류
-                print("Server key Error : INFO-500")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-200':  # 데이터 없음
-                print("Data Error : INFO-200")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-301':  # request type error
-                print("Request Type Error : INFO-301")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-310':  # Can't found Service error
-                print("API can't found Service : INFO-310")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-331':  # start index error
-                print("Start Index Error : INFO-331")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-332':  # End Index error
-                print("End Index Error : INFO-332")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-333':  # request location type error (request location must be interger)
-                print("Request location Type Error : INFO-333")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-334':  # start index > end index error
-                print("Index Error : INFO-334")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-335':  # request sample data error (Max sample data num is 5)
-                print("Request Sample Data Error : INFO-335")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-336':  # request data error (Can't call over 1000 request at once)
-                print("Request Data Error : INFO-336")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-600':  # DB Connect error
-                print("DB Connect Error : INFO-600")
-                return response_data
-            elif self.data['errorMessage']['code'] == 'INFO-601':  # SQL Sentence error
-                print("SQL Sentence Error : INFO-601")
-                return response_data
-            else:
-                print('Unexpected Error')
-                return response_data
-        else :
-            print("지하철 운영시간이 아닙니다.")
-            return 0
+        elif self.data['errorMessage']['code'] == 'INFO-100': #인증키 오류
+            print("Authentication key Error : INFO-100")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-500':  # 서버 오류
+            print("Server key Error : INFO-500")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-200':  # 데이터 없음
+            print("Data Error : INFO-200")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-301':  # request type error
+            print("Request Type Error : INFO-301")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-310':  # Can't found Service error
+            print("API can't found Service : INFO-310")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-331':  # start index error
+            print("Start Index Error : INFO-331")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-332':  # End Index error
+            print("End Index Error : INFO-332")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-333':  # request location type error (request location must be interger)
+            print("Request location Type Error : INFO-333")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-334':  # start index > end index error
+            print("Index Error : INFO-334")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-335':  # request sample data error (Max sample data num is 5)
+            print("Request Sample Data Error : INFO-335")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-336':  # request data error (Can't call over 1000 request at once)
+            print("Request Data Error : INFO-336")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-600':  # DB Connect error
+            print("DB Connect Error : INFO-600")
+            return response_data
+        elif self.data['errorMessage']['code'] == 'INFO-601':  # SQL Sentence error
+            print("SQL Sentence Error : INFO-601")
+            return response_data
+        else:
+            print('Unexpected Error')
+            return response_data
+       # else :
+       #     print("지하철 운영시간이 아닙니다.")
+       #     return 0
 
 
     def check_train_is_avilable_time(self):

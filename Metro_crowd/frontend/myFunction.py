@@ -1,6 +1,18 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from yolov5 import Person_count
+import Person_count
+
+
+
+def time_to_str(second):
+    second = int(second)
+    if second >= 60 :
+        minute = int(second / 60)
+        second = int(second%60)
+        time = str(minute) + ":" + str(second)
+    else :
+        time = "00:" + str(second)
+    return time
 
 class train_data:
     def __init__(self):
@@ -27,21 +39,18 @@ class train_data:
             self.train_updnLine.append(train_dataset.iloc[row]['updnLine'])
             self.train_time.append(train_dataset.iloc[row]['barvlDt'])
             self.train_line.append(train_dataset.iloc[row]['subwayId'])
-            self.train_destination.append(train_dataset.iloc[row]['bstatnId'])  # 종착지하철역ID
+            self.train_destination.append(train_dataset.iloc[row]['bstatnNm'])  # 종착지하철역ID
 
 
     def Extensions_train_data(self):
-        if '내선' in self.train_updnLine :
-            index = self.train_updnLine.index('내선')
-            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
-                   self.train_destination[index], self.train_id[index]]
-        else :
-            return [None, None,None,None,None]
+        index = self.train_updnLine.index('내선')
+        return [self.train_line[index], self.train_updnLine[index], time_to_str(self.train_time[index]),\
+               self.train_destination[index], self.train_id[index]]
 
     def External_train_data(self):
         if '외선' in self.train_updnLine:
             index = self.train_updnLine.index('외선')
-            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+            return [self.train_line[index], self.train_updnLine[index], time_to_str(self.train_time[index]),\
                    self.train_destination[index], self.train_id[index]]
         else :
             return [None, None,None,None,None]
@@ -50,7 +59,7 @@ class train_data:
     def Upward_train_data(self):
         if '상행' in self.train_updnLine:
             index = self.train_updnLine.index('상행')
-            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+            return [self.train_line[index], self.train_updnLine[index], time_to_str(self.train_time[index]),\
                    self.train_destination[index], self.train_id[index]]
         else :
             return [None, None,None,None,None]
@@ -59,7 +68,7 @@ class train_data:
     def Downward_train_data(self):
         if '하행' in self.train_updnLine:
             index = self.train_updnLine.index('하행')
-            return [self.train_line[index], self. train_updnLine[index], self.train_time[index],\
+            return [self.train_line[index], self.train_updnLine[index], time_to_str(self.train_time[index]),\
                    self.train_destination[index], self.train_id[index]]
         else :
             return [None, None,None,None,None]
