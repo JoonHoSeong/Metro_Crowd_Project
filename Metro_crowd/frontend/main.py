@@ -10,18 +10,10 @@ app = Flask(__name__,
             template_folder='templates'
             )
 
-app.config['MYSQL_DATABASE_HOST'] = ''
-app.config['MYSQL_DATABASE_USER'] = ''
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = ''
-mysql = MySQL()
-mysql.init_app(app)
-
 
 @app.route('/info/<string:station>', methods=['GET'])
 def getStName(station):
-    station = json.loads(station)
-
+    station = json.loads(station) #역명 불러오기
 
     # 현재시간 load
     load_time = time.datetime.now()
@@ -30,7 +22,7 @@ def getStName(station):
     second = load_time.second
     time_now = str(hour) + ':' + str(minute) + ":" + str(second)
 
-    # 혼잡도 계산
+    # 혼잡도 계산 API Load
     crowd_data = myFunction.crowded_detect()
 
     # 열차 도착 정보
@@ -121,6 +113,7 @@ def getStName(station):
                                  "ID": Downward_train_data[4],
                                  "Now_time": time_now,
                                  "Crowd": crowd_data.crowd()}
+
 
     print(Extensions_train_data)
     print(External_train_data)
