@@ -13,10 +13,10 @@ import detect
 class load_image:
 
     def __init__(self):
-        self.host = 'test.cy2mahvlzze7.ap-northeast-2.rds.amazonaws.com'
-        self.user = 'admin'
-        self.pw = 'j6332335'
-        self.db = 'team_project'
+        self.host = ''
+        self.user = ''
+        self.pw = ''
+        self.db = ''
 
     def create_random_image_index(self, image_num=10):
         image_index_list = []
