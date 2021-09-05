@@ -44,7 +44,7 @@
                 StInfo.style.visibility='visible'; //클릭시, "contentWrapper" visible
 
                 let station = {
-                    'name': stName,
+                    'name': stName
                 }
                 const request = new XMLHttpRequest()
                 request.open('get', `/info/${JSON.stringify(station)}`)
