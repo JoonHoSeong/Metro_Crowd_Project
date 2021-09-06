@@ -29,7 +29,7 @@ AI모델을 활용하여 사람의 수를 Count 하여 혼잡도를 계산, 웹�
 - Classification Model - 자체 제작
 
 ## 구동 방법
-1. Terminal of CMD를 이용 필요 라이브러리 설치(pip install -r requirements.txt)
+1. Terminal o CMD를 이용 필요 라이브러리 설치(pip install -r requirements.txt)
 2. Front-end Folder의 main.py 실행
 
 ## 팀프로젝트 지원
