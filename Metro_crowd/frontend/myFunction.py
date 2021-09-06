@@ -30,20 +30,27 @@ class train_data:
         get_metrodata.set_station(self.station_name)
 
 
-    def load_station_data(self, line_num):
+    def load_station_data(self):
 #        print("myfunction load_station_data station name: ",self.station_name)
         train_dataset = get_metrodata.load_API_data()
         train_dataset = train_dataset.sort_values(by='barvlDt' ,ascending=True) #도착 시간 오름차순 정령
         train_dataset = train_dataset.sort_values(by='updnLine', ascending=False) # 하행, 외선, 상행, 내선 순서
 
         for row in range(len(train_dataset), ):
-            if not train_dataset.iloc[row]['barvlDt'] == '0' \
-                    and train_dataset.iloc[row]['subwayId'] == "100" + str(line_num): #열차 대기시간이 없을때 미출력
+            if not train_dataset.iloc[row]['barvlDt'] == '0': #\
+                    #and train_dataset.iloc[row]['subwayId'] == "100" + str(line_num): #열차 대기시간이 없을때 미출력
                 self.train_id.append(train_dataset.iloc[row]['btrainNo'])
                 self.train_updnLine.append(train_dataset.iloc[row]['updnLine'])
                 self.train_time.append(train_dataset.iloc[row]['barvlDt'])
                 self.train_line.append(train_dataset.iloc[row]['subwayId'])
                 self.train_destination.append(train_dataset.iloc[row]['bstatnNm'])  # 종착지하철역ID
+            else : #대기시간이 전부 0일시 대기시간을 1로 변경
+                self.train_id.append(train_dataset.iloc[row]['btrainNo'])
+                self.train_updnLine.append(train_dataset.iloc[row]['updnLine'])
+                self.train_time.append('1')
+                self.train_line.append(train_dataset.iloc[row]['subwayId'])
+                self.train_destination.append(train_dataset.iloc[row]['bstatnNm'])  # 종착지하철역ID
+        #print(self.train_id, self.train_updnLine, self.train_time, self.train_line, self.train_destination) #데이터 확인
 
     def Extensions_train_data(self):
         if '내선' in self.train_updnLine:

@@ -28,7 +28,7 @@ def getStName(station):
     # 열차 도착 정보
     train_data_set = myFunction.train_data()
     train_data_set.set_staion(station['name'])
-    train_data_set.load_station_data(line_num=2)#호선 정보 넣기기
+    train_data_set.load_station_data()#호선 정보 넣기기
     Extensions_train_data = train_data_set.Extensions_train_data()  # 내선
     External_train_data = train_data_set.External_train_data()  # 외선
     Upward_train_data = train_data_set.Upward_train_data()  # 상행
