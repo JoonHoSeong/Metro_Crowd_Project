@@ -1,6 +1,7 @@
-from flask import Flask, render_template
-import json
+from flask import Flask, render_template, request
+import numpy as np
 import myFunction
+import json
 import datetime as time
 
 app = Flask(__name__,
@@ -9,11 +10,18 @@ app = Flask(__name__,
             template_folder='templates'
             )
 
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
 
-@app.route('/info/<string:station>', methods=['GET'])
-def getStName(station):
-    station = json.loads(station) #역명 불러오기
-    #호선정보 불러오기
+
+@app.route('/info', methods=['GET'])
+def getStation():
+    # 역 이름, 호선 이름 get
+    station = request.args.get('name');
+    line = request.args.get('line');
 
     # 현재시간 load
     load_time = time.datetime.now()
@@ -27,7 +35,7 @@ def getStName(station):
 
     # 열차 도착 정보
     train_data_set = myFunction.train_data()
-    train_data_set.set_staion(station['name'])
+    train_data_set.set_staion(station)
     train_data_set.load_station_data()#호선 정보 넣기기
     Extensions_train_data = train_data_set.Extensions_train_data()  # 내선
     External_train_data = train_data_set.External_train_data()  # 외선
@@ -114,24 +122,45 @@ def getStName(station):
                                  "Now_time": time_now,
                                  "Crowd": crowd_data.crowd()}
 
-
     print(Extensions_train_data)
     print(External_train_data)
     print(Upward_train_data)
     print(Downward_train_data)
-    print(station['name'])
-    return render_template('index.html')
+    print(station)
+    print(line)
 
+    data_all = {
+        'extensionsCrowd': Extensions_train_data["Crowd"],
+        'externalCrowd': External_train_data["Crowd"],
+        'upCrowd': Upward_train_data["Crowd"],
+        'downCrowd': Downward_train_data["Crowd"],
+        'extensionsWait': Extensions_train_data["Wait_time"],
+        'externalWait': External_train_data["Wait_time"],
+        'upWait': Upward_train_data["Wait_time"],
+        'downWait': Downward_train_data["Wait_time"],
+        'extensionsDest': Extensions_train_data["Destination"],
+        'externalDest': External_train_data["Destination"],
+        'upDest': Upward_train_data["Destination"],
+        'downDest': Downward_train_data["Destination"],
+        'nowtime': time_now
+    }
+    data_all = json.dumps(data_all, cls=NumpyEncoder)
+
+    #print(type(Upward_train_data["Wait_time"]))
+
+    return data_all
 
 @app.route("/")
 def index():
     return render_template('index.html')
 
-
 @app.route('/search')
 def searchStation():
     return render_template("search-station.html")
 
+@app.route('/header')
+def getHeader():
+    return render_template("header.html")
 
 if __name__ == '__main__':
     app.run(debug=True)

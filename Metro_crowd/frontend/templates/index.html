@@ -9,7 +9,7 @@
     <meta name="viewport" content=content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 
     <link href="{{ url_for('static', filename='css/normalize.css') }}" type="text/css" rel="stylesheet">
-    <script  src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+    <script  src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
     
     <script src="http://mattstow.com/js/ios-orientationchange-fix.min.js"></script>
     <script src="http://mattstow.com/experiment/responsive-image-maps/jquery.rwdImageMaps.min.js"></script>
@@ -24,44 +24,221 @@
 
 
     <script>
-        $(document).ready(function(){
-             $("#header").load("{{ url_for('static', filename='src/header.html') }}");
 
-            var StInfo = document.getElementById('StInfo');
-            StInfo.style.visibility='hidden'; //deafult-"contentWrapper" hidden상태
 
-            $("area").click(function(){
-                var lines = $(this).attr('class'); 
-                var lineArr = lines.split(' '); //역에 해당하는 호선 문자열을 담은 Arr
-                var stName = $(this).attr('title'); //클릭한 역 이름
+const lineEng = {
+    "1호선": "--line1", "2호선": "--line2",
+    "3호선": "--line3", "4호선": "--line4",
+    "5호선": "--line5", "6호선": "--line6",
+    "7호선": "--line7", "8호선": "--line8",
+    "9호선": "--line9", "인천1호선": "--lineIC1",
+    "인천2호선": "--lineIC2", "수인분당선": "--lineSB",
+    "신분당": "--lineSBD", "경의중앙선": "--lineKJ",
+    "공항철도": "--lineAP", "경춘선": "--lineGC",
+    "의정부경전철": "--lineEJB", "용인경전철": "--lineYI",
+    "경강선": "--lineGG", "우이신설경전철": "--lineUI",
+    "서해선": "--lineSH", "김포도시철도": "--lineKP"
+};
 
-                //console.log(stName);
-                //alert(stName);
-                lineArr.forEach(function(element){ //역의 모든 호선을 출력
-                    //console.log(element+"!");
-                });
-                
-                StInfo.style.visibility='visible'; //클릭시, "contentWrapper" visible
+const lineText = {
+    "1호선": "1", "2호선": "2",
+    "3호선": "3", "4호선": "4",
+    "5호선": "5", "6호선": "6",
+    "7호선": "7", "8호선": "8",
+    "9호선": "9", "인천1호선": "1",
+    "인천2호선": "2", "수인분당선": "분당",
+    "신분당": "신분당", "경의중앙선": "경의",
+    "공항철도": "공항", "경춘선": "경춘",
+    "의정부경전철": "의정", "용인경전철": "용인",
+    "경강선": "경강", "우이신설경전철": "우이",
+    "서해선": "서해", "김포도시철도": "김포"
+};
 
-                let station = {
-                    'name': stName
-                }
-                const request = new XMLHttpRequest()
-                request.open('get', `/info/${JSON.stringify(station)}`)
-                request.onload = () => {
-                    const message = request.responseText
-                    console.log(message)
-                }
-                request.send()
+$(document).ready(function() {
+    var StInfo = document.getElementById('StInfo');
+    var maxStationNum = 4;
+
+    $("#header").load("header");
+
+    StInfo.style.visibility = 'hidden';
+
+    $("#search").click(function() {
+        location.href = "search-station.html";
+    });
+
+    $("area").click(function() {
+        var lines = $(this).attr('class');
+        var lineArr = lines.split(' ');
+        var stName = $(this).attr('title');
+
+        //console.log(stName);
+        //var nStation = this.nextElementSibling;
+        //var nName = $(nStation).attr('title');
+        //var pStation = this.previousElementSibling;
+        //var pName = $(pStation).attr('title');
+
+        //$('.fStation-name > span').html(pName);
+        $('.station-namebox > span').html(stName);
+        //$('.nStation-name > span').html(nName);
+
+        StInfo.style.visibility = 'visible';
+
+        //역 별로 호선 Button 배치
+        resetActiveClass(maxStationNum, lineArr.length);
+        resetButtonColor(maxStationNum);
+        setButtonColor();
+        fillButtonColor(1);
+
+        //button 클릭시 active 상태 추가/삭제 + 색 변경
+        var btns = document.getElementsByClassName("line-toggle-button");
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function() {
+                var current = document.getElementsByClassName("active");
+                var thisBNum = this.getAttribute('id')[1];
+                removeButtonColor(current[0].getAttribute('id')[1]);
+
+                current[0].className = current[0].className.replace(" active", "");
+                this.className += " active";
+                fillButtonColor(thisBNum);
+                sendLineParam(lineArr[thisBNum - 1]);
             });
-        });
+        }
+
+        sendLineParam(lineArr[0]);
+
+        function resetActiveClass(maxNum, arrLength) {
+            $('#b1').addClass("active");
+            for(var i = 2; i <= maxNum; i++) {
+                var bId = 'b'.concat(String(i));
+                var el = document.getElementById(bId);
+                if ($(el).hasClass('active') == true) {
+                    el.className = el.className.replace(" active", "");
+                    console.log('remove active');
+                }
+            }
+        }
+
+        function resetButtonColor(maxNum) {
+            for(var i = 1; i <= maxNum; i++) {
+                var bId = 'b'.concat(String(i));
+                $('#' + bId).css("border-color", "white");
+                $(`li:nth-child(${i}) >> span`).html(" ");
+            }
+        }
+
+        function setButtonColor() {
+            for (var i = 1; i <= lineArr.length; i++) {
+            var bId = 'b'.concat(String(i));
+
+                var lineName = lineArr[i - 1];
+                $('#' + bId).css("border-color", `var(${lineEng[lineName]})`);
+
+                $(`li:nth-child(${i}) >> span`).html(lineText[lineName]);
+                $(`li:nth-child(${i}) >> span`).css("color", `var(${lineEng[lineName]})`);
+
+
+                if ($.isNumeric(lineName) == false) { // 한글의 경우 font-size 를 줄임(ex.신분당)
+                    $('#' + bId).css('font-size', '0.9em');
+                }
+        };
+        }
+
+        //active된 버튼의 색을 채움
+        function fillButtonColor(n) {
+            var bId = '#b'.concat(n); //몇번째 버튼인지
+            $(bId).css("backgroundColor", `var(${lineEng[lineArr[n-1]]})`);
+            $(`${bId} > span`).css("color", 'white');
+            $('.station-info').css("backgroundColor", `var(${lineEng[lineArr[n-1]]})`);
+        }
+
+        //active가 remove된 버튼의 색을 지움
+        function removeButtonColor(n) {
+            var bId = '#b'.concat(n);
+            $(bId).css("backgroundColor", 'white');
+            $(`${bId} > span`).css("color", `var(${lineEng[lineArr[n-1]]})`);
+        }
+
+        //역, 호선 정보 get 전송
+        function sendLineParam(lineName) {
+            var Parms = '?name=' + stName + "&line="+ lineName;
+
+            $.ajax({
+                url:'/info' + Parms,
+                type: 'get',
+                dataType: 'text',
+                success: function(data){
+                    const dataAll = JSON.parse(data);
+                    var timeArr = dataAll["nowtime"].split(':');
+                    var time = timeArr[0].concat('시 ', timeArr[1], '분');
+                    const chLineList = ['extensionsWait', 'externalWait', 'upWait', 'downWait'];
+                    var cnt = 0;
+
+                    $('.standard-time').html(time + " 기준");
+                    for(var i = 0; i < 4; i++){
+                        if(dataAll[chLineList[i]] != '00:1' && dataAll[chLineList[i]] != '00:00') {
+                            var direc = '';
+                            var crowdVar = (chLineList[i].replace('Wait', '')).concat('Crowd');
+                            var destVar = (chLineList[i].replace('Wait', '')).concat('Dest');
+                            var waitVar = chLineList[i];
+                            var waitTimeArr = dataAll[waitVar].split(':');
+                            var waitTime = waitTimeArr[0].concat('분 ', waitTimeArr[1], '초');
+
+                            console.log(dataAll);
+                            if (cnt > 2) {
+                                break;
+                            }
+                            if (cnt == 0) {
+                                direc = '.up';
+                            } else {
+                                direc = '.down';
+                            }
+                            console.log(destVar);
+                            var destSelector = direc.concat('Container');
+
+                            console.log(dataAll[destVar]);
+                            $(`${destSelector} >> span`).first().html(dataAll[destVar].concat('행'));
+                            $(`${destSelector} >> span:odd`).html(waitTime);
+
+                            for(var j = 0; j < 10; j++) {
+                                var congClass1 = '.up-'.concat(String(j+1));
+                                var congClass2 = '.down-'.concat(String(j+1));
+                                var crowdSelector = '';
+                                if (cnt == 0) {
+                                    crowdSelector = congClass1;
+                                } else {
+                                    crowdSelector = congClass2;
+                                }
+                                console.log(crowdVar);
+                                console.log(dataAll[crowdVar]);
+                                if(dataAll[crowdVar][j] == 0) {
+                                    $(crowdSelector).css('backgroundColor', '#7FE556');
+                                }
+                                if(dataAll[crowdVar][j] == 1) {
+                                    $(crowdSelector).css('backgroundColor', '#FFDE53');
+                                }
+                                if(dataAll[crowdVar][j] == 2) {
+                                    $(crowdSelector).css('backgroundColor', '#DD3D1B');
+                                }
+                            }
+                            cnt = cnt + 1;
+                        }
+
+                    }
+
+                },
+                error:function(e){
+                    console.log(e.responseText);
+                }
+            });
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", (e) => {
+    panzoom('#map', { bound: 'outer' });
+});
     </script>
 
-    <script> /* map Panzoom 기능 활성화 */
-        document.addEventListener("DOMContentLoaded", (e) => {
-            panzoom('#map', {bound:'outer'});
-        });
-    </script>
 </head>
 
 <body>
@@ -480,7 +657,7 @@
                         <area title="산곡" coords="271,1530,25" class="1호선 7호선" shape="circle">
                         <area title="석남" coords="86,1530,25" class="1호선 7호선" shape="circle">
 
-                        <!-- 9호선 -->
+                        <!-- 8호선 -->
                         <area title="암사" coords="3585,1242,25" class="8호선" shape="circle">
                         <area title="천호" coords="3581,1392,25" class="5호선 8호선" shape="circle">
                         <area title="강동구청" coords="3524,1449,25" class="8호선" shape="circle">
@@ -513,10 +690,93 @@
                         <area title="등촌" coords="1020,1050,25" class="9호선" shape="circle">
                         <area title="염창" coords="1089,1050,25" class="9호선" shape="circle">
                         <area title="신목동" coords="1149,1060,25" class="9호선" shape="circle">
-                        <area title="" coords="881,1050,25" class="9호선" shape="circle">
-                        <area title="" coords="881,1050,25" class="9호선" shape="circle">
-                        
+                        <area title="선유도" coords="1198,1107,25" class="9호선" shape="circle">
+                        <area title="당산" coords="1226,1134,25" class="2호선 9호선" shape="circle">
+                        <area title="국회의사당" coords="1339,1247,25" class="9호선" shape="circle">
+                        <area title="여의도" coords="1417,1321,25" class="5호선 9호선" shape="circle">
+                        <area title="샛강" coords="1521,1429,25" class="9호선" shape="circle">
+                        <area title="노량진" coords="1554,1465,25" class="1호선 9호선" shape="circle">
+                        <area title="노들" coords="1626,1534,25" class="9호선" shape="circle">
+                        <area title="흑석" coords="1761,1548,25" class="9호선" shape="circle">
+                        <area title="동작" coords="1885,1547,25" class="4호선 9호선" shape="circle">
+                        <area title=구반포" coords="2036,1548,25" class="9호선" shape="circle">
+                        <area title="신반포" coords="2156,1248,25" class="9호선" shape="circle">
+                        <area title="고속터미널" coords="2298,1652,25" class="3호선 7호선 9호선" shape="circle">
+                        <area title="사평" coords="2499,1652,25" class="9호선" shape="circle">
+                        <area title="신논현" coords="2618,1652,25" class="9호선" shape="circle">
+                        <area title="언주" coords="2930,1652,25" class="9호선" shape="circle">
+                        <area title="선정릉" coords="2845,1652,25" class="9호선 수인분당선" shape="circle">
+                        <area title="삼성중앙" coords="2974,1652,25" class="9호선" shape="circle">
+                        <area title="봉은사" coords="3041,1668,25" class="9호선" shape="circle">
+                        <area title="종합운동장" coords="3045,1768,25" class="2호선 9호선" shape="circle">
+                        <area title="삼전" coords="3105,1803,25" class="9호선" shape="circle">
+                        <area title="석촌고분" coords="3267,1798,25" class="9호선" shape="circle">
+                        <area title="석촌" coords="3418,1708,25" class="8호선 9호선" shape="circle">
+                        <area title="송파나루" coords="3540,1622,25" class="9호선" shape="circle">
+                        <area title="한성백제" coords="3643,1622,25" class="9호선" shape="circle">
+                        <area title="올림픽공원" coords="3723,1582,25" class="5호선 9호선" shape="circle">
+                        <area title="둔촌오륜" coords="3989,1428,25" class="9호선" shape="circle">
+                        <area title="중앙보훈병원" coords="3989,1339,25" class="9호선" shape="circle">
 
+                        <!-- 인천1호선 -->
+                        <area title="계양" coords="390,391,25" class="인천1호선 공항철도" shape="circle">
+                        <area title="귤현" coords="390,1022,25" class="인천1호선" shape="circle">
+                        <area title="박촌" coords="390,1099,25" class="인천1호선" shape="circle">
+                        <area title="임학" coords="390,1173,25" class="인천1호선" shape="circle">
+                        <area title="계산" coords="390,1249,25" class="인천1호선" shape="circle">
+                        <area title="경인교대입구" coords="390,1322,25" class="인천1호선" shape="circle">
+                        <area title="작전" coords="390,1397,25" class="인천1호선" shape="circle">
+                        <area title="갈산" coords="390,1470,25" class="인천1호선" shape="circle">
+                        <area title="부평구청" coords="388,1532,25" class="7호선 인천1호선" shape="circle">
+                        <area title="부평" coords="389,1740,25" class="1호선 인천1호선" shape="circle">
+                        <area title="동수" coords="440,1883,25" class="인천1호선" shape="circle">
+                        <area title="부평삼거리" coords="551,1883,25" class="인천1호선" shape="circle">
+                        <area title="간석오거리" coords="702,1883,25" class="인천1호선" shape="circle">
+                        <area title="인천시청" coords="764,1920,25" class="인천1호선 인천2호선" shape="circle">
+                        <area title="예술회관" coords="808,1966,25" class="인천1호선" shape="circle">
+                        <area title="인천터미널" coords="857,2014,25" class="인천1호선" shape="circle">
+                        <area title="문학경기장" coords="899,2057,25" class="인천1호선" shape="circle">
+                        <area title="선학" coords="952,2110,25" class="인천1호선" shape="circle">
+                        <area title="신연수" coords="990,2150,25" class="인천1호선" shape="circle">
+                        <area title="원인재" coords="925,2253,25" class="인천1호선 수인분당선" shape="circle">
+                        <area title="동춘" coords="790,2250,25" class="인천1호선" shape="circle">
+                        <area title="동막" coords="790,2250,25" class="인천1호선" shape="circle">
+                        <area title="캠퍼스타운" coords="598,2250,25" class="인천1호선" shape="circle">
+                        <area title="테크노파크" coords="483,2250,25" class="인천1호선" shape="circle">
+                        <area title="지식정보단지" coords="351,2250,25" class="인천1호선" shape="circle">
+                        <area title="인천대입구" coords="232,2250,25" class="인천1호선" shape="circle">
+                        <area title="센트럴파크" coords="114,2290,25" class="인천1호선" shape="circle">
+                        <area title="국제업무지구" coords="114,2349,25" class="인천1호선" shape="circle">
+                        <area title="송도달빛축제공원" coords="114,2413,25" class="인천1호선" shape="circle">
+
+                        <!-- 인천2호선 -->
+                        <area title="검단오류" coords="87,578,25" class="인천2호선" shape="circle">
+                        <area title="왕길" coords="87,639,25" class="인천2호선" shape="circle">
+                        <area title="검단사거리" coords="87,694,25" class="인천2호선" shape="circle">
+                        <area title="마전" coords="87,751,25" class="인천2호선" shape="circle">
+                        <area title="완정" coords="134,826,25" class="인천2호선" shape="circle">
+                        <area title="독정" coords="187,867,25" class="인천2호선" shape="circle">
+                        <area title="검암" coords="268,935,25" class="인천2호선 공항철도" shape="circle">
+                        <area title="검바위" coords="175,1018,25" class="인천2호선" shape="circle">
+                        <area title="아시아드경기장" coords="87,1152,25" class="인천2호선" shape="circle">
+                        <area title="서구청" coords="87,1259,25" class="인천2호선" shape="circle">
+                        <area title="가정" coords="87,1351,25" class="인천2호선" shape="circle">
+                        <area title="가정중앙시장" coords="87,1439,25" class="인천2호선" shape="circle">
+                        <area title="석남" coords="86,1530,25" class="1호선 7호선" shape="circle">
+                        <area title="서부여성회관" coords="87,1648,25" class="인천2호선" shape="circle">
+                        <area title="인천가좌" coords="87,1718,25" class="인천2호선" shape="circle">
+                        <area title="가재울" coords="87,1783,25" class="인천2호선" shape="circle">
+                        <area title="주안국가산단" coords="87,1846,25" class="인천2호선" shape="circle">
+                        <area title="주안" coords="249,1917,25" class="1호선 인천2호선" shape="circle">
+                        <area title="시민공원" coords="385,1917,25" class="인천2호선" shape="circle">
+                        <area title="석바위시장" coords="528,1351,25" class="인천2호선" shape="circle">
+                        <area title="인천시청" coords="762,1351,25" class="인천2호선" shape="circle">
+                        <area title="석천사거리" coords="843,1917,25" class="인천2호선" shape="circle">
+                        <area title="모래내시장" coords="955,1945,25" class="인천2호선" shape="circle">
+                        <area title="만수" coords="1011,1999,25" class="인천2호선" shape="circle">
+                        <area title="남동구청" coords="1055,2044,25" class="인천2호선" shape="circle">
+                        <area title="인천대공원" coords="1099,2199,25" class="인천2호선" shape="circle">
+                        <area title="운연" coords="1108,2164,25" class="인천2호선" shape="circle">
 
                     </map>
         
@@ -527,22 +787,7 @@
                         });
                     </script>
         </div>
-        
-        <!-- 역 정보 (역 클릭시 나타남)-->
 
-        <!--
-            DB 작업
-            - 이전역, 이번역, 다음역 정보 표시
-            - 이전역, 다음역 click시, 해당역으로 정보 바뀜 
-                (이전역/다음역 의 이름을 가진 <area>를 click한 효과를 줄 것인지(코드 표현 가능하나 search 시간 걸림), 
-                정보만 바꿀 것인지(?) 선택해야 할 듯)
-            - 호선 버튼 누르면 정보(이전역, 다음역, 혼잡도) 변경. (버튼, 색 바뀜은 프론트 엔드 처리)
-            - xx:xx 기준 표시
-            - 상행, 하행 표시 (..행)
-            - 도착까지 남은 시간 (xx분 xx초, 곧 도착 등)
-            - 칸별 혼잡도. 0, 1, 2의 값으로 받으면 색으로 바꾸는 작업은 프론트엔드에서 함
-            - 갱신 버튼 누르면 정보 갱신
-        -->
         <div id="StInfo" class="contentWrapper">
         <div class="content">
             <div class="topMenu">
@@ -551,26 +796,37 @@
                 <div class="button-container"> <!-- Clickable button 나열 -->
                     <ul>
                         <li>
-                            <button class="line-toggle-button" style="background: #0EA349; border: none; border: solid 1px;">
-                                <span class="line-text-focus">2</span>
+                            <button class="line-toggle-button" id="b1">
+                                <span class="bline">
+                                </span>
                             </button>
                         </li>
                         <li>
-                            <button class="line-toggle-button" style="background-color:#FFFFFF; border: solid 1px #00a9e0">
-                                <span class="line-text-nfocus">4</span>
+                            <button class="line-toggle-button" id="b2">
+                                <span class="bline"></span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="line-toggle-button" id="b3">
+                                <span class="bline"></span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="line-toggle-button" id="b4">
+                                <span class="bline"></span>
                             </button>
                         </li>
                     </ul>
                 </div>
                 <i class="fas fa-sync-alt"></i>  <!-- 정보 갱신 버튼, 클릭시 정보 갱신, index.html에 누르면 회전하는 css 삽입 예정-->
             </div>
-    
+
             <!-- 역 정보 표시 (이전역, 현재역, 다음역) / 이전역 다음역 클릭시 정보가 바뀌어야 함.-->
-            <div class="station-info" style="background: #0EA349; border: none;">
+            <div class="station-info">
                 <!-- 이전 역 link -->
                 <div class="fStation-section">
                     <i class="fas fa-angle-left"></i>
-                    <div id="fStation-name">
+                    <div class="fStation-name">
                         <span>이전역</span>
                     </div>
                 </div>
@@ -591,13 +847,13 @@
                 </div>
             </div>
             <hr>
-    
+
             <!-- 칸별혼잡도 표시 -->
             <div class="congestion-by-comp">
                 <div class="cong-title">
                     <span>칸별혼잡도</span>
                 </div>
-                
+
                 <div class="cong-container">
                     <!--기준 시간-->
                     <div class="standard-time">00:00 기준</div>
@@ -606,23 +862,23 @@
                         <div class="upline">
                             <div class="upContainer">
                                 <div class="line-title"> <!-- 도착 행(상행)-->
-                                    <span>ㅁㅁㅁ행</span>
+                                    <span>상행</span>
                                 </div>
                                 <div class="remainTime"> <!-- 도착까지 남은 시간 -->
                                     <span>00분 00초</span>
                                 </div>
                                 <div class="show-congestion"> <!-- 후에 0, 1, 2값을 받아 색 변경이 될 구간 -->
-                                    <div class="cong up-1" style="background-color: #868686"></div>
-                                    <div class="cong up-2" style="background-color: #868686"></div>
-                                    <div class="cong up-3" style="background-color: #868686"></div>
-                                    <div class="cong up-4" style="background-color: #868686"></div>
-                                    <div class="cong up-5" style="background-color: #868686"></div>
-                                    <div class="cong up-6" style="background-color: #868686"></div>
-                                    <div class="cong up-7" style="background-color: #868686"></div>
-                                    <div class="cong up-8" style="background-color: #868686"></div>
-                                    <div class="cong up-9" style="background-color: #868686"></div>
-                                    <div class="cong up-10" style="background-color: #868686"></div>
-    
+                                    <div class="cong up-1"></div>
+                                    <div class="cong up-2"></div>
+                                    <div class="cong up-3"></div>
+                                    <div class="cong up-4"></div>
+                                    <div class="cong up-5"></div>
+                                    <div class="cong up-6"></div>
+                                    <div class="cong up-7"></div>
+                                    <div class="cong up-8"></div>
+                                    <div class="cong up-9"></div>
+                                    <div class="cong up-10"></div>
+
                                     <div></div> <!-- 칸 숫자 표시 (건들지 않아도 O)-->
                                     <div class="compNum">1</div>
                                     <div class="compNum">2</div>
@@ -641,23 +897,23 @@
                         <div class="downline">
                             <div class="downContainer">
                                 <div class="line-title">
-                                    <span>ㅁㅁㅁ행</span> <!-- 도착 행(하행)-->
+                                    <span>하행</span> <!-- 도착 행(하행)-->
                                 </div>
                                 <div class="remainTime"> <!-- 도착까지 남은 시간 -->
                                     <span>00분 00초</span>
                                 </div>
                                 <div class="show-congestion"> <!-- 복잡도 색 표시 구간 -->
-                                    <div class="cong down-1" style="background-color: #868686"></div>
-                                    <div class="cong down-2" style="background-color: #868686"></div>
-                                    <div class="cong down-3" style="background-color: #868686"></div>
-                                    <div class="cong down-4" style="background-color: #868686"></div>
-                                    <div class="cong down-5" style="background-color: #868686"></div>
-                                    <div class="cong down-6" style="background-color: #868686"></div>
-                                    <div class="cong down-7" style="background-color: #868686"></div>
-                                    <div class="cong down-8" style="background-color: #868686"></div>
-                                    <div class="cong down-9" style="background-color: #868686"></div>
-                                    <div class="cong down-10" style="background-color: #868686"></div>
-        
+                                    <div class="cong down-1"></div>
+                                    <div class="cong down-2"></div>
+                                    <div class="cong down-3"></div>
+                                    <div class="cong down-4"></div>
+                                    <div class="cong down-5"></div>
+                                    <div class="cong down-6"></div>
+                                    <div class="cong down-7"></div>
+                                    <div class="cong down-8"></div>
+                                    <div class="cong down-9"></div>
+                                    <div class="cong down-10"></div>
+
                                     <div></div> <!-- 칸 숫자 표시 -->
                                     <div class="compNum">1</div>
                                     <div class="compNum">2</div>
@@ -670,7 +926,7 @@
                                     <div class="compNum">9</div>
                                     <div class="compNum">10</div>
                                 </div>
-                            </div>                      
+                            </div>
                         </div>
                     </div>
                 </div>
