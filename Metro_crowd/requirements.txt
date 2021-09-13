@@ -1,5 +1,10 @@
 # pip install -r requirements.txt
 
+# network --------------------
+requests
+pandas
+mysql-connector #(not pymysql)
+
 # base ----------------------------------------
 matplotlib>=3.2.2
 numpy>=1.18.5
